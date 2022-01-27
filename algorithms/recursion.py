@@ -1,4 +1,4 @@
-from leet_code import ListNode
+from leet_code import ListNode, TreeNode
 
 
 #### RECURSIVE FUNCTIONS ####
@@ -12,7 +12,7 @@ def reverse_string(mystring):
 
 
 def is_palindrome(mystring):
-    if (not len(mystring)) or (len(mystring) == 1):
+    if 0 <= len(mystring) <= 1:
         return True
 
     if mystring[0] == mystring[len(mystring) - 1]:
@@ -22,13 +22,13 @@ def is_palindrome(mystring):
 
 
 ### NUMBERS ###
-def decimal_to_binary(mydecimal, result):
-    if not mydecimal:
+def decimal_to_binary(number, result):
+    if not number:
         return result
 
-    result = str(mydecimal % 2) + result
+    result = str(number % 2) + result
 
-    return decimal_to_binary(mydecimal // 2, result)
+    return decimal_to_binary(number // 2, result)
 
 
 def recursiveSummation(number):
@@ -63,6 +63,18 @@ def fibonacci(n):
     return fibonacci(n - 1) + fibonacci(n - 2)
 
 
+cache = {0: 1, 1: 1}
+
+
+def fibonnaci_memoization(n):
+    if n in cache:
+        return cache[n]
+
+    result = fibonnaci_memoization(n - 1) + fibonnaci_memoization(n - 2)
+    cache[n] = result
+    return result
+
+
 ## MERGE SORT ##
 
 
@@ -93,9 +105,64 @@ def sorted_merge(l1, l2):
         return l2
 
 
+### TREE ###
+# Insert value into Binary Search Tree (BST)
+def insert_node(head, value):
+    if not head:
+        head = TreeNode(val=value)
+        return head
+
+    if head.val > value:
+        head.left = insert_node(head.left, value)
+    else:
+        head.right = insert_node(head.right, value)
+
+    return head
+
+
+def print_tree(head):
+    if head:
+        print_tree(head.left)
+        if head.val == 150:
+            print('stop')
+        print(head.val)
+        print_tree(head.right)
+
+
+### Graphs ###
+# Find a node in a graph using DFS
+def dfs(node, visited, target):
+    if not node:
+        return False
+
+    if node.val == target:
+        return True
+
+    for neighbor in node.get_neighbors():
+        if neighbor in visited:
+            continue
+
+        visited.append(neighbor)
+        is_found = dfs(neighbor, visited, target)
+
+        if is_found:
+            return True
+
+    return False
+
+
 if __name__ == "__main__":
     linked_list = ListNode()
-    l1 = linked_list.create_linked_list([2, 5, 8])
-    l2 = linked_list.create_linked_list([1, 3, 4, 6, 8])
-    merged_linked_list = sorted_merge(l1, l2)
-    linked_list.print_linked_list(merged_linked_list)
+    # l1 = linked_list.create_linked_list([2, 5, 8])
+    # l2 = linked_list.create_linked_list([1, 3, 4, 6, 8])
+    # merged_linked_list = sorted_merge(l1, l2)
+    # linked_list.print_linked_list(merged_linked_list)
+
+    # mylist = [100, 80, 50, 90, 30, 60, 90, 85, 95, 120, 110, 108, 115, 140, 150]
+    # root = None
+    # for num in mylist:
+    #     root = insert_node(root, num)
+    #
+    # print_tree(root)
+
+print(fibonacci(6))

@@ -31,31 +31,31 @@ def max_len_combination(sentence, list_words):
     return sorted(mydict[max(mydict.keys())])
 
 
-class TestSmallestLetter(unittest.TestCase):
-
-    def test_1(self):
-        sentence = 'barfoobar'
-        list_words = ['bar', 'foo']
-        result = ['bar', 'foo', 'bar']
-        self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
-
-    def test_2(self):
-        sentence = 'tomorrow'
-        list_words = ['to', 'tom', 'morrow', 'or', 'row']
-        result = ['tom', 'or', 'row']
-        self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
-
-    def test_3(self):
-        sentence = 'abcd'
-        list_words = ['a', 'ab', 'bcd', 'c', 'd']
-        result = ['ab', 'c', 'd']
-        self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
-
-    def test_4(self):
-        sentence = 'sixixi'
-        list_words = ['s', 'si', 'sixi', 'ix', 'xi']
-        result = ['si', 'xi', 'xi']
-        self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
+# class TestSmallestLetter(unittest.TestCase):
+#
+#     def test_1(self):
+#         sentence = 'barfoobar'
+#         list_words = ['bar', 'foo']
+#         result = ['bar', 'foo', 'bar']
+#         self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
+#
+#     def test_2(self):
+#         sentence = 'tomorrow'
+#         list_words = ['to', 'tom', 'morrow', 'or', 'row']
+#         result = ['tom', 'or', 'row']
+#         self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
+#
+#     def test_3(self):
+#         sentence = 'abcd'
+#         list_words = ['a', 'ab', 'bcd', 'c', 'd']
+#         result = ['ab', 'c', 'd']
+#         self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
+#
+#     def test_4(self):
+#         sentence = 'sixixi'
+#         list_words = ['s', 'si', 'sixi', 'ix', 'xi']
+#         result = ['si', 'xi', 'xi']
+#         self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
 
 
 ### INUIT ###
@@ -162,6 +162,31 @@ def is_accepted(client, server):
             accepted_langs += list(set(server_langs) - set(accepted_langs))
 
     return accepted_langs
+
+
+### FLEXE ###
+def airplane_seat_reservation(N, S):
+    total_seats = N * 3
+    seats_row = {str(row): 'ABCDEFGHJK' for row in range(1, N + 1)}
+    booked_seats = S.split(" ")
+
+    for seat in booked_seats:
+        row = seat[0]
+        position = seat[1]
+        if position in 'ABC':
+            seat_remove = 'ABC'
+
+        elif position in 'EF':
+            seat_remove = 'DEFG'
+
+        else:
+            seat_remove = 'HJK'
+
+        if seat_remove in seats_row[row]:
+            seats_row[row] = seats_row[row].replace(seat_remove, "")
+            total_seats -= 1
+
+    return total_seats
 
 
 if __name__ == '__main__':
