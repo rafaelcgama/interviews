@@ -67,13 +67,17 @@ cache = {0: 1, 1: 1}
 
 
 def fibonnaci_memoization(n):
-    if n in cache:
-        return cache[n]
+    cache = {0: 1, 1: 1}
 
-    result = fibonnaci_memoization(n - 1) + fibonnaci_memoization(n - 2)
-    cache[n] = result
-    return result
+    def fib(n):
+        if n in cache:
+            return cache[n]
 
+        result = fib(n - 1) + fib(n - 2)
+        cache[n] = result
+        return result
+
+    return fib(n)
 
 ## MERGE SORT ##
 
@@ -165,4 +169,4 @@ if __name__ == "__main__":
     #
     # print_tree(root)
 
-print(fibonacci(6))
+print(fibonacci(5))

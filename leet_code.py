@@ -504,25 +504,20 @@ class Solution:
 
     def detectCycle(self, head):
         tail_fast = tail_slow = head
-        i = 0
-        mynodes = {tail_slow: i}
         while tail_fast and tail_fast.next:
             tail_slow = tail_slow.next
-            i += 1
-            mynodes[tail_slow] = i
             tail_fast = tail_fast.next.next
-            if mynodes.get(tail_fast, None):
-                i = mynodes[tail_fast]
+            if tail_fast is tail_slow:
                 break
         else:
-            return -1
+            return None
 
-        tail_slow = head
-        while i:
-            tail_slow = tail_slow.next
-            i -= 1
-
-        return tail_slow
+        tail = head
+        while tail_fast:
+            if tail is tail_fast:
+                return tail
+            tail = tail.next
+            tail_fast = tail_fast.next
 
 
 if __name__ == '__main__':
