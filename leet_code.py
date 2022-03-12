@@ -1,7 +1,57 @@
 import bisect
-from collections import deque
+from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
+from collections import deque, Counter
 import math
 from itertools import groupby
+
+
+class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+
+# Implement Trie
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_word = False
+
+
+class Trie:
+
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        cur = self.root
+
+        for c in word:
+            if c not in cur.children:
+                cur.children[c] = TrieNode()
+            cur = cur.children[c]
+
+        cur.is_word = True
+
+    def search(self, word):
+        cur = self.root
+
+        for c in word:
+            if c not in cur.children:
+                return False
+            cur = cur.children[c]
+
+        return cur.is_word
+
+    def startsWith(self, prefix):
+        cur = self.root
+
+        for c in prefix:
+            if c not in cur.children:
+                return False
+            cur = cur.children[c]
+
+        return True
 
 
 class ListNode:
@@ -188,6 +238,9 @@ class Solution:
         left, right = 0, len(letters) - 1
         while left < right:
             mid = left + (right - left) // 2
+            if letters[mid] == target:
+                left = mid
+                break
             if letters[mid] > target:
                 right = mid - 1
 
@@ -195,7 +248,7 @@ class Solution:
                 left = mid + 1
 
         idx = left if target < letters[left] else left + 1
-        return letters[0] if idx > (len(letters) - 1) else letters[idx]
+        return letters[idx % len(letters)]
 
     def peakIndexInMountainArray(self, arr):
         left, right = 0, len(arr) - 1
@@ -519,32 +572,505 @@ class Solution:
             tail = tail.next
             tail_fast = tail_fast.next
 
+    def climbStairs(self, n: int) -> int:
+        # Dynamic Programming
+        one, two = 1, 1
+        for i in range(n - 1):
+            temp = one
+            one = one + two
+            two = temp
+
+        return one
+
+    def findAnagrams(self, s, p):
+        if len(p) > len(s):
+            return []
+        p_counter, cur_counter = {}, {}
+        for i in range(len(p)):
+            p_counter[p[i]] = p_counter.get(p[i], 0) + 1
+            cur_counter[s[i]] = cur_counter.get(s[i], 0) + 1
+
+        result = [0] if p_counter == cur_counter else []
+
+        l, r = 0, len(p)
+        while r < len(s):
+            cur_counter[s[l]] -= 1
+            if not cur_counter[s[l]]:
+                del cur_counter[s[l]]
+            cur_counter[s[r]] = cur_counter.get(s[r], 0) + 1
+
+            l += 1
+            r += 1
+            if cur_counter == p_counter:
+                result.append(l)
+
+        return result
+
+    def findMaxLength(self, nums):
+        cur_count = 1
+        cum_sum = 0
+        max_length = 0
+        for i in range(len(nums)):
+            if nums[i] == 0:
+                cum_sum -= 1
+            else:
+                cum_sum += 1
+
+            if cum_sum == 0:
+                max_length += cur_count
+                cur_count = 0
+
+            cur_count += 1
+
+        return max_length
+
+    def removeDuplicates(self, nums):
+        previous, count, idx, = nums[0], 1, 1
+
+        while idx <= len(nums) - 1:
+            if previous == nums[idx]:
+                if count >= 2:
+                    nums[idx:] = nums[idx + 1:]
+                    continue
+                count += 1
+            else:
+                count = 1
+
+            previous = nums[idx]
+            idx += 1
+
+        return nums
+
+    def addDigits(self, num):
+        if not num:
+            return num
+        total = 0
+        while True:
+            num = total if total else num
+            total = 0
+            while num:
+                total += (num % 10)
+                num //= 10
+
+            if int(math.log10(total)) + 1 == 1:
+                return total
+
+    def findPairs(self, nums, k):
+        look_up = Counter(nums)
+
+        count = 0
+        if k == 0:
+            for value in look_up.values():
+                if value > 1:
+                    count += 1
+        else:
+            for num in nums:
+                target = -k + num
+                if target in look_up:
+                    count += 1
+
+            return count
+
+    def subarraySum(self, nums, k):
+        result = 0
+        cur_sum = 0
+        prefix_sums = {0: 1}
+
+        for num in nums:
+            cur_sum += num
+            diff = cur_sum - k
+
+            result += prefix_sums.get(diff, 0)
+            prefix_sums[cur_sum] = prefix_sums.get(cur_sum, 0) + 1
+
+        return result
+
+    def findMaxLength(self, nums):
+        max_length = 0
+        lookup = {}
+        count = 0
+        for i in range(len(nums)):
+            current = nums[i]
+            if current == 0:
+                count -= 1  # decrement our count if our current element is 0
+            else:
+                # increment our count if current element is 1
+                count += 1
+
+            if count == 0:
+                # if count is 0, we have a new subarray with length+1
+                max_length = i + 1
+            if count in lookup:
+                max_length = max(max_length, i - lookup[count])
+            else:
+                lookup[count] = i
+
+        return max_length
+
+    def permute(self, nums):
+        result = []
+
+        # base case
+        if len(nums) == 1:
+            return [list(nums)]
+
+        for i in range(len(nums)):
+            n = nums.pop(0)
+            perms = self.permute(nums)
+
+            for perm in perms:
+                perm.append(n)
+            result.extend(perms)
+            nums.append(n)
+
+        return result
+
+    def subsets(self, nums):
+        result = []
+
+        def dfs(i, subset):
+            if i >= len(nums):
+                result.append(list(subset))
+                return
+
+            # decision to include nums[i]
+            subset.append(nums[i])
+            dfs(i + 1, subset)
+
+            # decision NOT to include nums[i]
+            subset.pop()
+            dfs(i + 1, subset)
+
+        dfs(0, [])
+        return result
+
+        # def backtrack(first=0, curr=[]):
+        #     if len(curr) == k:
+        #         output.append(curr[:])
+        #         return
+        #
+        #     for i in range(first, len(nums)):
+        #         curr.append((nums[i]))
+        #
+        #         backtrack(i + 1, curr)
+        #         curr.pop()
+        #
+        # output = []
+        # for k in range(len(nums) + 1):
+        #     backtrack()
+        #
+        # return output
+
+    def maxDepth(self, root):
+        self.max_level = 0
+
+        def dfs(node, level=0):
+            if not node:
+                self.max_level = max(self.max_level, level)
+            else:
+                dfs(node.left, level + 1)
+                dfs(node.right, level + 1)
+
+        dfs(root, 0)
+
+        return self.max_level
+
+    def removeCoveredIntervals(self, intervals):
+        # idx_removed = set()
+        # for i in range(len(intervals)):
+        #     a, b = intervals[i]
+        #     if i in idx_removed:
+        #         continue
+        #     for j in range(i + 1, len(intervals)):
+        #         c, d = intervals[j]
+        #         if j in idx_removed:
+        #             continue
+        #
+        #         if c <= a and d >= b:
+        #             idx_removed.add(i)
+        #             break
+        #
+        #         elif a <= c and b >= d:
+        #             idx_removed.add(j)
+        #
+        # return len(intervals) - len(idx_removed)
+
+        for a in reversed(list(intervals)):
+            for b in reversed(intervals):
+                if a != b:
+                    if (b[0] <= a[0]) and (a[1] <= b[1]):
+                        intervals.pop()
+                        break
+
+        return len(intervals)
+
+    def removeKdigits(self, num, k):
+        stack = []
+        for c in num:
+            while k > 0 and stack and stack[-1] > c:
+                k -= 1
+                stack.pop()
+
+            stack.append(c)
+
+        # If not all k numbers are removed
+        stack = stack[:len(stack) - k]
+        result = ''.join(stack)
+
+        while len(result) and result[0] == '0':
+            result = result[1:]
+
+        return result if result else '0'
+
+    def titleToNumber(self, columnTitle):
+        self.total = 0
+
+        def recursion(i=0, j=len(columnTitle) - 1):
+            if i == len(columnTitle):
+                return
+
+            c_num = ord(columnTitle[j]) - 64
+            self.total += (c_num * (26 ** i))
+
+            recursion(i + 1, j - 1)
+
+        recursion()
+
+        return self.total
+
+    def combinationSum(self, candidates, target):
+        res = []
+
+        def dfs(i=0, cur=[], total=0):
+            if total == target:
+                res.append(cur[:])
+                return
+
+            if i >= len(candidates) or total > target:
+                return
+
+            cur.append(candidates[i])
+            dfs(i, cur, total + candidates[i])
+            cur.pop()
+            dfs(i + 1, cur, total)
+
+        dfs()
+        return res
+
+    def cloneGraph(self, node):
+        node_dict = {}
+
+        def dfs(node):
+            if node in node_dict:
+                return node_dict[node]
+
+            copy = Node(node.val)
+            node_dict[node] = copy
+            for nei in node.neighbors:
+                copy.neighbors.append(dfs(nei))
+            return copy
+
+        return dfs(node) if node else None
+
+    def compareVersion(self, version1: str, version2: str) -> int:
+        def normalize_size(version1, version2):
+            extra_zero = len(version1) - len(version2)
+            if extra_zero != 0:
+                update_list = version1 if extra_zero < 0 else version2
+                update_list.extend([0] * abs(extra_zero))
+
+            return version1, version2
+
+        new_version1, new_version2 = normalize_size(version1.split("."), version2.split("."))
+
+        for a, b in zip(new_version1, new_version2):
+            if int(a) > int(b):
+                return 1
+
+            elif int(a) < int(b):
+                return -1
+
+            elif int(a) == int(b):
+                continue
+
+        return 0
+
+    def widthOfBinaryTree(self, root):
+        level_dict = {}
+
+        def dfs(node, level=0, idx=1):
+            if node:
+                level_dict[level] = level_dict.get(level, list()) + [idx]
+                dfs(node.left, level + 1, idx=(idx * 2) - 1)
+                dfs(node.right, level + 1, idx=idx * 2)
+
+        dfs(root)
+
+        return max(map(lambda x: x[-1] - x[0] + 1, level_dict.values()))
+
+    def isSubsequence(self, s, t):
+        idx = 0
+        for c in s:
+            idx_t = t.find(c)
+            if idx_t >= idx:
+                t = t[idx_t + 1:]
+                idx = 0
+
+            else:
+                return False
+
+        return True
+
+    def minDepth(self, root):
+        # # DFS
+        # def dfs(root, level=1):
+        #     if not root.left and not root.right:
+        #         self.min_ = min(self.min_, level) if self.min_ else level
+        #         return
+        #
+        #     if root:
+        #         dfs(root.left, level + 1)
+        #         dfs(root.right, level + 1)
+        #
+        # self.min_ = 0
+        # dfs(root)
+        #
+        # return self.min_
+
+        # BFS
+        if not root:
+            return 0
+
+        queue = deque([(root, 1)])
+        while queue:
+            node, num = queue.popleft()
+            if not node.left and not node.right:
+                return num
+
+            if node.left:
+                queue.append((node.left, num + 1))
+
+            if node.right:
+                queue.append((node.right, num + 1))
+
+    def isSameTree(self, p, q):
+        # # DFS
+        # def dfs(p, q):
+        #     if not p and not q:
+        #         return
+        #
+        #     if (p and not q) or (not p and q) or p.val != q.val:
+        #         return False
+        #
+        #     left = dfs(p.left, q.left)
+        #     if isinstance(left, bool):
+        #         return left
+        #     right = dfs(p.right, q.right)
+        #     if isinstance(right, bool):
+        #         return right
+        #
+        # is_same = dfs(p, q)
+        # if isinstance(is_same, bool):
+        #     return is_same
+        #
+        # return True
+
+        queue = deque([(p, q)])
+        while queue:
+            p, q = queue.popleft()
+            if not p and not q:
+                continue
+
+            elif (p and not q) or (not p and q) or p.val != q.val:
+                return False
+
+            queue.append((p.left, q.left))
+            queue.append((p.right, q.right))
+
+        return True
+
+    def hasPathSum(self, root, targetSum):
+        def dfs(root, cur_sum=0):
+            if not root:
+                return False
+
+            cur_sum += root.val
+            if not root.left and not root.right:
+                return cur_sum == targetSum
+
+            return (dfs(root.left, cur_sum) or dfs(root.right, cur_sum))
+
+        return dfs(root)
+
+    def numberOfArithmeticSlices(self, nums):
+        if len(nums) < 3:
+            return 0
+
+        total = 0
+
+        for i in range(len(nums)):
+            for j in range(i + 1, len(nums)):
+                if (nums[j + 1] - nums[j]) == (nums[j] - nums[j - 1]):
+                    total += 1
+
+                else:
+                    break
+
+        return total
+
+    def champagneTower(self, poured, query_row, query_glass):
+        glass_stack = [[0 for _ in range(x)] for x in range(1, query_row + 2)]
+        glass_stack[0][0] = poured
+
+        for i in range(query_row):
+            for j in range(len(glass_stack[i])):
+                temp = (glass_stack[i][j] - 1) / 2
+                if temp > 0:
+                    glass_stack[i + 1][j] += temp
+                    glass_stack[i + 1][j + 1] += temp
+
+        return glass_stack[query_row][query_glass] if glass_stack[query_row][query_glass] <= 1 else 1
+
+
+def to_binary_tree(items):
+    """Create BT from list of values."""
+    n = len(items)
+    if n == 0:
+        return None
+
+    def inner(index: int = 0) -> TreeNode:
+        """Closure function using recursion bo build tree"""
+        if n <= index or items[index] is None:
+            return None
+
+        node = TreeNode(items[index])
+        node.left = inner(2 * index + 1)
+        node.right = inner(2 * index + 2)
+        return node
+
+    return inner()
+
+
+class Stack:
+    def __init__(self):
+        self.stack = None
+
+    def pop(self):
+        val = self.stack.val
+        self.stack = self.stack.next
+        return val
+
+    def push(self, val):
+        tmp = Node(val, self.stack)
+        self.stack = tmp
+
+    def is_empty(self):
+        return True if self.stack is None else False
+
 
 if __name__ == '__main__':
     x = Solution()
-    l1 = ListNode().create_linked_list([5, 6, 3, 4, 2, 7])
-    # l2 = ListNode().create_linked_list([1, 3, 4])
+    # print(x.champagneTower(25, 6, 1))
 
-    # print(x.rob([2, 1, 1, 2]))
-
-    # print(x.insertionSortList(l1))
-
-    # tree = TreeNode(val=1)
-    # tree.left = TreeNode(val=0)
-    # tree.left.left = TreeNode(val=0)
-    # tree.left.right = TreeNode(val=1)
-    # tree.right = TreeNode(val=1)
-    # tree.right.left = TreeNode(val=0)
-    # tree.right.right = TreeNode(val=1)
-
-    # print(x.sumRootToLeaf(tree))
-
-    node1 = ListNode(item=3)
-    node2 = ListNode(item=2)
-    node3 = ListNode(item=0)
-    node4 = ListNode(item=-4, next_=node2)
-    node1.next = node2
-    node2.next = node3
-    node3.next = node4
-
-    print(x.detectCycle(node1))
+    x = Stack()
+    print(x.is_empty())
