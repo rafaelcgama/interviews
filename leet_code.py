@@ -55,9 +55,10 @@ class Trie:
 
 
 class ListNode:
-    def __init__(self, item=None, next_=None):
+    def __init__(self, item=None, next_=None, random_=None):
         self.item = item
         self.next = next_
+        self.random = random_
 
     def create_linked_list(self, mylist):
         head = tail = ListNode()
@@ -193,13 +194,12 @@ class Solution:
 
     def deleteDuplicates(self, head):
         dummy_head = tail = ListNode()
-        mydict = {}
+        myset = set()
         while head:
-            mydict[head.item] = mydict.get(head.item, False)
-            if not mydict[head.item]:
+            if head.item not in myset:
                 tail.next = head
                 tail = tail.next
-                mydict[head.item] = True
+                myset.add(head.val)
 
             else:
                 tail.next = None
@@ -207,6 +207,22 @@ class Solution:
             head = head.next
 
         return dummy_head.next
+
+        # NO EXTRA MEMORY
+        # if not head:
+        #     return head
+        #
+        # dummy_head = tail = ListNode(val=head.val)
+        # head = head.next
+        #
+        # while head:
+        #     if tail.val != head.val:
+        #         tail.next = ListNode(val=head.val)
+        #         tail = tail.next
+        #
+        #     head = head.next
+        #
+        # return dummy_head
 
     def reverseList(self, head):
         previous = None
@@ -1031,6 +1047,183 @@ class Solution:
 
         return glass_stack[query_row][query_glass] if glass_stack[query_row][query_glass] <= 1 else 1
 
+    def isValid(self, s: str) -> bool:
+        stack = []
+        opposite_map = {
+            ')': '(',
+            ']': '[',
+            '}': '{'
+        }
+        for p in s:
+            if p in opposite_map.values():
+                stack.append(p)
+
+            elif stack and opposite_map[p] == stack[-1]:
+                stack.pop()
+
+            else:
+                return False
+
+        return True if not len(stack) else False
+
+    def minRemoveToMakeValid(self, s: str) -> str:
+        opposite_map = {
+            ')': '('
+        }
+        stack = []
+        for i, c in enumerate(s):
+            if stack and stack[-1][0] == opposite_map.get(c, False):
+                stack.pop()
+
+            elif c == "(" or c == ")":
+                stack.append((c, i))
+
+        for c, idx in reversed(stack):
+            s = s[:idx] + s[idx + 1:]
+
+        return s
+
+    def simplifyPath(self, path: str) -> str:
+        stack = []
+        cur = ""
+
+        for c in path + "/":
+            if c == "/":
+                if cur == "..":
+                    if stack:
+                        stack.pop()
+                elif cur != "" and cur != ".":
+                    stack.append(cur)
+                cur = ""
+            else:
+                cur += c
+
+        return "/" + "/".join(stack)
+
+    def addTwoNumbers(self, l1, l2):
+        def reverse_list(head):
+            number = 0
+            i = 0
+            while head:
+                number += (head.item * 10 ** i)
+                i += 1
+                head = head.next
+
+            return number
+
+        def convert_linked_list(num):
+            if not num:
+                return ListNode(val=num)
+
+            dummy_head = tail = ListNode()
+            while num:
+                tail.next = ListNode(item=num % 10)
+                tail = tail.next
+                num //= 10
+
+            return dummy_head.next
+
+        num1, num2 = reverse_list(l1), reverse_list(l2)
+
+        return convert_linked_list(num1 + num2)
+
+    def rotateRight(self, head, k):
+        if not head:
+            return head
+
+        tail = head
+        length = 1
+        while tail.next:
+            length += 1
+            tail = tail.next
+
+        idx = k % length
+        if idx == 0:
+            return head
+
+        curr = head
+        for _ in range(length - idx - 1):
+            curr = curr.next
+
+        new_dummy = curr.next
+        curr.next = None
+        tail.next = head
+
+        return new_dummy
+
+    def validateStackSequences(self, pushed, popped):
+        i = 0
+        stack = []
+        for x in pushed:
+            stack.append(x)
+            while stack and i < len(popped) and stack[-1] == popped[i]:
+                stack.pop()
+                i += 1
+
+        return not stack
+
+    def scoreOfParentheses(self, s: str) -> int:
+        total = 0
+        stack = []
+        for c in s:
+            if "(" == c:
+                stack.append(total)
+                total = 0
+
+            else:
+                total = stack.pop() + max(total * 2, 1)
+
+        return total
+
+    def removeDuplicateLetters(self, s: str) -> str:
+        look_up = {}
+        for i in range(len(s)):
+            look_up[s[i]] = i
+
+        stack = []
+
+        for i in range(len(s)):
+            if s[i] in stack:  # letter cannot be repeated
+                continue
+
+            while stack and stack[-1] > s[i] and look_up[stack[-1]] > i:
+                stack.pop()
+
+            stack.append(s[i])
+
+        return ''.join(stack)
+
+    def copyRandomList(self, head):
+        node_map = {}
+
+        cur = head
+        while cur:
+            copy = ListNode(item=cur.item)
+            node_map[cur] = copy
+            cur = cur.next
+
+        cur = head
+        while cur:
+            copy = node_map[cur]
+            copy.next = node_map[cur.next]
+            copy.random = node_map[copy.random]
+            cur = cur.next
+
+        return node_map[head]
+
+    def getSmallestString(self, n: int, k: int) -> str:
+        result = ["a"] * n
+
+        k -= n
+        i = n - 1
+
+        while k > 0:
+            result[i] = chr(ord("a") + min(25, k))
+            i -= 1
+            k -= 25
+
+        return "".join(result)
+
 
 def to_binary_tree(items):
     """Create BT from list of values."""
@@ -1051,26 +1244,24 @@ def to_binary_tree(items):
     return inner()
 
 
-class Stack:
-    def __init__(self):
-        self.stack = None
-
-    def pop(self):
-        val = self.stack.val
-        self.stack = self.stack.next
-        return val
-
-    def push(self, val):
-        tmp = Node(val, self.stack)
-        self.stack = tmp
-
-    def is_empty(self):
-        return True if self.stack is None else False
-
-
 if __name__ == '__main__':
     x = Solution()
-    # print(x.champagneTower(25, 6, 1))
 
-    x = Stack()
-    print(x.is_empty())
+    node1 = ListNode(item=7)
+    node2 = ListNode(item=13)
+    node3 = ListNode(item=11)
+    node4 = ListNode(item=10)
+    node5 = ListNode(item=1)
+
+    node1.next = node2
+    node1.random = None
+    node2.next = node3
+    node2.random = node1
+    node3.next = node4
+    node3.random = node5
+    node4.next = node5
+    node4.random = node3
+    node5.random = node1
+
+    # print(x.getSmallestString(node1))
+    print(x.partitionLabels("ababcbacadefegdehijhklij"))
