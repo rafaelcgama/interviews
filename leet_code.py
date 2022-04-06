@@ -3,6 +3,7 @@ import json
 
 from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
 from collections import deque, Counter
+from itertools import permutations
 import math
 from itertools import groupby
 
@@ -1253,6 +1254,14 @@ class Solution:
             else:
                 right = mid - 1
 
+    def nextPermutation(self, nums):
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        new_perm = sorted(list(permutations(nums)))
+        idx = bisect.bisect_right(new_perm, tuple(nums))
+        return list(new_perm[idx]) if idx < len(new_perm) - 1 else list(new_perm[0])
+
 
 def to_binary_tree(items):
     """Create BT from list of values."""
@@ -1293,4 +1302,4 @@ if __name__ == '__main__':
     node5.random = node1
 
     # print(x.getSmallestString(node1))
-    print(x.searchMatrix([[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 13))
+    print(x.nextPermutation([1,2,3]))

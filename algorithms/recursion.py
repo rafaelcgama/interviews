@@ -169,4 +169,4 @@ if __name__ == "__main__":
     #
     # print_tree(root)
 
-print(fibonacci(5))
+print(fibonacci(4))
