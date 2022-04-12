@@ -3,8 +3,10 @@ def encode_number(n):
         raise "Number is too large to encode"
     return chr(n)
 
+
 def decode_number(s):
     return ord(s)
+
 
 def serialize(mylist):
     result = []
@@ -12,6 +14,7 @@ def serialize(mylist):
         result.append(encode_number(len(word)))
         result.append(word)
     return ''.join(result)
+
 
 def deserialize(mystring):
     result = []
@@ -30,4 +33,3 @@ def deserialize(mystring):
         i += word_len
 
     return result
-

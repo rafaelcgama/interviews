@@ -1,6 +1,7 @@
 import bisect
 import json
-
+import heapq
+from copy import deepcopy
 from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
 from collections import deque, Counter
 from itertools import permutations
@@ -1258,9 +1259,147 @@ class Solution:
         """
         Do not return anything, modify nums in-place instead.
         """
-        new_perm = sorted(list(permutations(nums)))
-        idx = bisect.bisect_right(new_perm, tuple(nums))
-        return list(new_perm[idx]) if idx < len(new_perm) - 1 else list(new_perm[0])
+        for i in range(len(nums) - 1, -1, -1):
+            if i == 0:
+                nums.sort()
+
+            elif nums[i - 1] < nums[i]:
+                nums[i], nums[i - 1] = nums[i - 1], nums[i]
+                nums[i:] = sorted(nums[i:])
+                break
+
+    def swapNodes(self, head, k):
+        tail = head
+        idx = 1
+        idx_dict = {}
+        while tail:
+            idx_dict[idx] = tail.item
+            idx += 1
+            tail = tail.next
+
+        beg, end = k, len(idx_dict) + 1 - k
+
+        dummy_head = tail = head
+        idx = 1
+        while tail:
+            if idx == beg:
+                tail.item = idx_dict[end]
+
+            elif idx == end:
+                tail.item = idx_dict[beg]
+
+            idx += 1
+            tail = tail.next
+
+        return dummy_head
+
+    def maxArea(self, height):
+        max_area, l, r = 0, 0, len(height) - 1
+
+        while l < r:
+            cur_area = min(height[l], height[r]) * (r - l)
+            max_area = max(max_area, cur_area)
+            if height[l] > height[r]:
+                r -= 1
+            else:
+                l += 1
+
+        return max_area
+
+    def threeSumMulti(self, arr, target: int) -> int:
+        arr.sort()
+        cnt = Counter(arr)  # obtain the number of instances of each number
+        res, i, l = 0, 0, len(arr)
+        while i < l:  # in replacement of the for-loop, so that we can increment i by more than 1
+            j, k = i, l - 1  # j should be the leftmost index, hence j=i instead of j=i+1
+            while j < k:  # i <= j < k; arr[i] <= arr[j] <= arr[k]
+                if arr[i] + arr[j] + arr[k] < target:
+                    j += cnt[arr[j]]
+
+                elif arr[i] + arr[j] + arr[k] > target:
+                    k -= cnt[arr[k]]
+
+                else:  # arr[i]+arr[j]+arr[k] == target
+                    if arr[i] != arr[j] != arr[k]:  # Case 1: All the numbers are different
+                        res += cnt[arr[i]] * cnt[arr[j]] * cnt[arr[k]]
+
+                    elif arr[i] == arr[j] != arr[k]:  # Case 2: The smaller two numbers are the same
+                        res += cnt[arr[i]] * (cnt[arr[i]] - 1) * cnt[
+                            arr[k]] // 2  # math.comb(cnt[arr[i]], 2)*cnt[arr[k]]
+
+                    elif arr[i] != arr[j] == arr[k]:  # Case 3: The larger two numbers are the same
+                        res += cnt[arr[i]] * cnt[arr[j]] * (
+                                cnt[arr[j]] - 1) // 2  # math.comb(cnt[arr[j]], 2)*cnt[arr[i]]
+
+                    else:  # Case 4: All the numbers are the same
+                        res += cnt[arr[i]] * (cnt[arr[i]] - 1) * (cnt[arr[i]] - 2) // 6  # math.comb(cnt[arr[i]], 3)
+                    # Shift pointers by the number of instances of the number
+                    j += cnt[arr[j]]
+                    k -= cnt[arr[k]]
+
+            i += cnt[arr[i]]  # Shift pointer by the number of instances of the number
+
+        return res % (10 ** 9 + 7)
+
+    def lastStoneWeight(self, stones) -> int:
+        stones = [-s for s in stones]
+        heapq.heapify(stones)
+
+        while len(stones) > 1:
+            first = heapq.heappop(stones)
+            second = heapq.heappop(stones)
+            if second > first:
+                heapq.heappush(stones, first - second)
+
+        stones.append(0)
+        return abs(stones[0])
+
+    def shiftGrid(self, grid, k: int):
+        num_cols, flat_list = len(grid[0]), []
+        for entry in grid:
+            flat_list.extend(entry)
+
+        idx = k % len(flat_list)
+        flat_list = flat_list[-idx:] + flat_list[: -idx]
+
+        return [flat_list[i:i + num_cols] for i in range(0, len(flat_list), num_cols)]
+
+    def gameOfLife(self, board):
+        # Original | New | State |
+        #    0     |  0  |   0   |
+        #    1     |  0  |  1    |
+        #    0     |  1  |  2    |
+        #    1     |  1  |  3    |
+        ROWS, COLS = len(board), len(board[0])
+
+        def count_neighbors(r, c):
+            nei = 0
+            for i in range(r - 1, r + 2):
+                for j in range(c - 1, c + 2):
+                    if ((i == r and j == c) or i < 0 or j < 0 or i == ROWS or j == COLS):
+                        continue
+
+                    if board[i][j] in [1, 3]:
+                        nei += 1
+            return nei
+
+        for r in range(ROWS):
+            for c in range(COLS):
+                nei = count_neighbors(r, c)
+                if board[r][c]:
+                    if nei in [2, 3]:
+                        board[r][c] = 3
+
+                elif nei == 3:
+                    board[r][c] = 2
+
+        for r in range(ROWS):
+            for c in range(COLS):
+                if board[r][c] == 1:
+                    board[r][c] = 0
+
+                elif board[r][c] in [2, 3]:
+                    board[r][c] = 1
 
 
 def to_binary_tree(items):
@@ -1301,5 +1440,5 @@ if __name__ == '__main__':
     node4.random = node3
     node5.random = node1
 
-    # print(x.getSmallestString(node1))
-    print(x.nextPermutation([1,2,3]))
+    board = [[0, 1, 0], [0, 0, 1], [1, 1, 1], [0, 0, 0]]
+    print(x.gameOfLife(board))
