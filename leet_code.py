@@ -85,6 +85,23 @@ class TreeNode:
         self.left = left
         self.right = right
 
+    def create_from_list(self, elements):
+        root_node = TreeNode(val=elements[0])
+        nodes = [root_node]
+        for i, x in enumerate(elements[1:]):
+            if x is None:
+                continue
+            parent_node = nodes[i // 2]
+            is_left = (i % 2 == 0)
+            node = TreeNode(val=x)
+            if is_left:
+                parent_node.left = node
+            else:
+                parent_node.right = node
+            nodes.append(node)
+
+        return root_node
+
 
 class Solution:
 
@@ -1401,24 +1418,140 @@ class Solution:
                 elif board[r][c] in [2, 3]:
                     board[r][c] = 1
 
+    def generateMatrix(self, n: int):
+        target = n * n
+        start, i, j, num = 0, 0, 0, 1
+        matrix = [n * [0] for _ in range(n)]
 
-def to_binary_tree(items):
-    """Create BT from list of values."""
-    n = len(items)
-    if n == 0:
-        return None
+        while True:
+            while j < n:
+                matrix[i][j] = num
+                if num == target:
+                    return matrix
+                num, j = num + 1, j + 1
 
-    def inner(index: int = 0) -> TreeNode:
-        """Closure function using recursion bo build tree"""
-        if n <= index or items[index] is None:
+            i, j = i + 1, j - 1
+            while i < n:
+                matrix[i][j] = num
+                if num == target:
+                    return matrix
+                num, i = num + 1, i + 1
+
+            i, j = i - 1, j - 1
+            while j >= start:
+                matrix[i][j] = num
+                if num == target:
+                    return matrix
+                num, j = num + 1, j - 1
+
+            i, j = i - 1, j + 1
+            while i > start:
+                matrix[i][j] = num
+                if num == target:
+                    return matrix
+                num, i = num + 1, i - 1
+
+            start, i, j, n = start + 1, i + 1, j + 1, n - 1
+
+    def searchBST(self, root, val):
+        if not root or root.val == val:
+            return root
+
+        return self.searchBST(root.left, val) if root.val > val else self.searchBST(root.right, val)
+
+    def trimBST(self, root, low: int, high: int):
+        if not root:
             return None
 
-        node = TreeNode(items[index])
-        node.left = inner(2 * index + 1)
-        node.right = inner(2 * index + 2)
-        return node
+        if root.val > high:
+            return self.trimBST(root.left, low, high)
+        if root.val < low:
+            return self.trimBST(root.right, low, high)
 
-    return inner()
+        root.left = self.trimBST(root.left, low, high)
+        root.right = self.trimBST(root.right, low, high)
+
+        return root
+
+    def increasingBST(self, root: TreeNode) -> TreeNode:
+        mylist = []
+
+        def dfs_in_order(root):
+            if root:
+                dfs_in_order(root.left)
+                mylist.append(root.val)
+                dfs_in_order(root.right)
+
+        dfs_in_order(root)
+
+        root = tail = TreeNode()
+        for num in mylist:
+            tail.right = TreeNode(val=num)
+            tail = tail.right
+
+        return root.right
+
+    def kthSmallest(self, root, k: int) -> int:
+        self.count = 0
+        self.result = None
+
+        def dfs(root):
+            if root:
+                dfs(root.left)
+                self.count += 1
+                if self.count == k:
+                    self.result = root.val
+                    return
+                dfs(root.right)
+
+        dfs(root)
+
+        return self.result
+
+    def recoverTree(self, root) -> None:
+        """
+        Do not return anything, modify root in-place instead.
+        """
+        temp = []
+
+        def dfs(node):
+            if node:
+                dfs(node.left)
+                temp.append(node)
+                dfs(node.right)
+
+        dfs(root)
+
+        srt = sorted(n.val for n in temp)
+
+        for i in range(len(srt)):
+            temp[i].val = srt[i]
+
+
+class BSTIterator:
+
+    def __init__(self, root):
+        self.root = root
+        self.values = []
+        self.idx = 0
+
+    def get_values(self, cur):
+        if cur:
+            self.get_values(cur.left)
+            self.values.append(cur.val)
+            self.get_values(cur.right)
+
+    def next(self) -> int:
+        if not self.values:
+            self.get_values(self.root)
+        idx = self.idx
+        self.idx += 1
+        return self.values[idx]
+
+    def hasNext(self) -> bool:
+        if not self.idx:
+            self.get_values(self.root)
+        return self.idx < len(self.values)
 
 
 if __name__ == '__main__':
@@ -1440,5 +1573,14 @@ if __name__ == '__main__':
     node4.random = node3
     node5.random = node1
 
-    board = [[0, 1, 0], [0, 0, 1], [1, 1, 1], [0, 0, 0]]
-    print(x.gameOfLife(board))
+    arr = [1]
+    root = TreeNode().create_from_list(arr)
+    y = BSTIterator(root)
+
+    print(y.hasNext())
+    print(y.next())
+    print(y.hasNext())
+    # print(y.next())
+    # print(y.hasNext())
+    # print(y.next())
+    # print(y.hasNext())

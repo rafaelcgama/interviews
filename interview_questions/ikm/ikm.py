@@ -15,7 +15,7 @@
 # test.name = 'porra'
 # print(test.name)
 
-config = '$CONFIG_ROOT/tables/${DICTIONARY}/${LANGUAGE}.json'
+# config = '$CONFIG_ROOT/tables/${DICTIONARY}/${LANGUAGE}.json'
 
 
 # import re
@@ -213,16 +213,17 @@ config = '$CONFIG_ROOT/tables/${DICTIONARY}/${LANGUAGE}.json'
 #
 # print(list(( x for y in vector for x in y if x % 2 == 0 )))
 
-def sq(x):
-    return x * x
-
+# def sq(x):
+#     return x * x
+#
+#
 # def recursive_map(func, seq):
 #     if seq == []:
 #         return seq
 #     else:
 #         return [func(seq[0])] + recursive_map(func, seq[1:])
 #
-# print(recursive_map(sq, [1, 2,3]))
+# print(recursive_map(sq, [1, 2, 3])) # CORRECT
 
 # def recursive_map(func, seq):
 #     if seq == []:
@@ -265,7 +266,7 @@ def sq(x):
 # def f(a, b, /, c, d, *, e, f):
 #     print(a, b, c, d, e, f)
 #
-# print(f(10, 20, 30, 40, 50, f=60))
+# print(f(10, 20, 30, 40, e=50, f=60)) # Correct
 
 # class Result(object):
 #     def __init__(self, title):
@@ -306,3 +307,34 @@ def sq(x):
 #
 # import random
 # print(''.join(random.sample(string, n)))
+# from string import *
+#
+# method = "METHODS"
+#
+#
+# def x(methods):
+#     method = str.swapcase(methods)
+#     print(("%(method)s" % locals()))
+#
+#
+# methods = str.swapcase(method[:-1])
+# print(x(methods))
+
+# class k:
+#     def __init__(self):
+#         self.__foo = 10
+#     def methodX(self):
+#         self.__methodY()
+#         print(self.__foo)
+#     def __methodY(self):
+#         self.__foo += 1
+# o = k()
+#
+# print(o.__foo)
+
+# #-*- coding: UTF-8 -*-
+# x = isinstance('34\xc2\xb0', str)
+# y = 'abc'.encode().decode('ascii')
+# z = "".join(['34\xb0', "56'", '12.63"', 'S'])
+# w = "a" + "b"
+# print(x, y, z, w)
