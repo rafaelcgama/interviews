@@ -607,7 +607,7 @@ class Solution:
             if tail is tail_fast:
                 return tail
             tail = tail.next
-            tail_fast = tail_fast.next
+            til_fast = tail_fast.next
 
     def climbStairs(self, n: int) -> int:
         # Dynamic Programming
