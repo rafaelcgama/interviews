@@ -1,7 +1,9 @@
 import bisect
+import collections
 import json
 import heapq
 from copy import deepcopy
+from functools import cache
 from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
 from collections import deque, Counter
 from itertools import permutations
@@ -105,15 +107,14 @@ class TreeNode:
 
 class Solution:
 
-    def twoSum(self, nums, target):
-        mydict = {}
-        for i, num in enumerate(nums):
-            diff = target - num
-            if diff not in mydict:
-                mydict[num] = i
+    def twoSum(nums, target):
+        idx_map = {}
 
-            elif (diff in nums) and mydict[diff] != i:
-                return [i, mydict[diff]]
+        for i, n in enumerate(nums):
+            diff = target - n
+            if diff in idx_map:
+                return [idx_map[diff], i]
+            idx_map[n] = i
 
     def reverse(self, x):
         new_number = 0
@@ -1527,31 +1528,80 @@ class Solution:
         for i in range(len(srt)):
             temp[i].val = srt[i]
 
+    def zigzag_convert(self, s: str, numRows: int) -> str:
+        if numRows == 1:
+            return s
+        cur_row, is_up, mydict = 0, True, {}
+        for c in s:
+            mydict[cur_row] = mydict.get(cur_row, str()) + c
+            if is_up:
+                if cur_row < numRows - 1:
+                    cur_row += 1
+                else:
+                    is_up = False
+                    cur_row -= 1
 
-class BSTIterator:
+            else:
+                if cur_row > 0:
+                    cur_row -= 1
+                else:
+                    is_up = True
+                    cur_row += 1
 
-    def __init__(self, root):
-        self.root = root
-        self.values = []
-        self.idx = 0
+        s = ''
+        for value in mydict.values():
+            s += value
 
-    def get_values(self, cur):
-        if cur:
-            self.get_values(cur.left)
-            self.values.append(cur.val)
-            self.get_values(cur.right)
+        return s
 
-    def next(self) -> int:
-        if not self.values:
-            self.get_values(self.root)
-        idx = self.idx
-        self.idx += 1
-        return self.values[idx]
+    def isValidSudoku(self, board) -> bool:
+        cols = collections.defaultdict(set)
+        rows = collections.defaultdict(set)
+        squares = collections.defaultdict(set)
 
-    def hasNext(self) -> bool:
-        if not self.idx:
-            self.get_values(self.root)
-        return self.idx < len(self.values)
+        for r in range(len(board)):
+            for c in range(len(board)):
+                cur_value = board[r][c]
+                if cur_value == ".":
+                    continue
+
+                if (cur_value in rows[r]) or (cur_value in cols[c]) or (cur_value in squares[(r // 3, c // 3)]):
+                    return False
+
+                cols[r].add(cur_value)
+                rows[c].add(cur_value)
+                squares[(r // 3, c // 3)].add(cur_value)
+
+        return True
+
+    def countAndSay(self, n):
+        result, count = '1', 1
+        while count < n:
+            cur_value = [(len(list(b)), a) for a, b in groupby(result)]
+            result = ''
+            for a, b in cur_value:
+                result += (str(a) + b)
+
+            count += 1
+
+        return result
+
+    def canJump(self, nums):
+        @cache
+        def dfs(cur_idx=0):
+            if nums[cur_idx] >= len(nums) - 1 - cur_idx:
+                return True
+
+            if cur_idx == len(nums) - 1:
+                return True
+
+            for i in range(1, nums[cur_idx] + 1):
+                if dfs(cur_idx + i):
+                    return True
+
+            return False
+
+        return dfs()
 
 
 if __name__ == '__main__':
@@ -1575,12 +1625,14 @@ if __name__ == '__main__':
 
     arr = [1]
     root = TreeNode().create_from_list(arr)
-    y = BSTIterator(root)
+    board = [["5", "3", ".", ".", "7", ".", ".", ".", "."],
+             ["6", ".", ".", "1", "9", "5", ".", ".", "."],
+             [".", "9", "8", ".", ".", ".", ".", "6", "."],
+             ["8", ".", ".", ".", "6", ".", ".", ".", "3"],
+             ["4", ".", ".", "8", ".", "3", ".", ".", "1"],
+             ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
+             [".", "6", ".", ".", ".", ".", "2", "8", "."],
+             [".", ".", ".", "4", "1", "9", ".", ".", "5"],
+             [".", ".", ".", ".", "8", ".", ".", "7", "9"]]
 
-    print(y.hasNext())
-    print(y.next())
-    print(y.hasNext())
-    # print(y.next())
-    # print(y.hasNext())
-    # print(y.next())
-    # print(y.hasNext())
+    x.isValidSudoku(board)
