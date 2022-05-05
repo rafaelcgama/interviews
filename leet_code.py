@@ -1603,6 +1603,58 @@ class Solution:
 
         return dfs()
 
+    def backspaceCompare(self, s: str, t: str) -> bool:
+        new_s, new_t = list(), list()
+        for c in s:
+            if c != '#':
+                new_s.append(c)
+
+            elif len(new_s) and c == '#':
+                new_s.pop()
+
+        for c in t:
+            if c != '#':
+                new_t.append(c)
+
+            elif len(new_t) and c == '#':
+                new_t.pop()
+
+        return new_s == new_t
+
+    def sortArrayByParity(self, nums):
+        if len(nums) == 1:
+            return nums
+
+        i, j = 0, len(nums) - 1
+        while i < j:
+            if nums[i] % 2 == 0:
+                i += 1
+                continue
+
+            if nums[j] % 2 != 0:
+                j -= 1
+                continue
+
+            nums[i], nums[j] = nums[j], nums[i]
+            i, j = i + 1, j - 1
+
+        return nums
+
+    def findUnsortedSubarray(self, nums) -> int:
+        stack, left, right = [], len(nums), 0
+
+        for i in range(len(nums)):
+            while len(stack) and nums[stack[-1]] > nums[i]:
+                left = min(left, stack.pop())
+            stack.append(i)
+
+        for i in range(len(nums) - 1, -1, -1):
+            while len(stack) and nums[stack[-1]] < nums[i]:
+                right = max(right, stack.pop())
+            stack.append(i)
+
+        return right - left + 1 if right - left > 0 else 0
+
 
 if __name__ == '__main__':
     x = Solution()
@@ -1625,14 +1677,4 @@ if __name__ == '__main__':
 
     arr = [1]
     root = TreeNode().create_from_list(arr)
-    board = [["5", "3", ".", ".", "7", ".", ".", ".", "."],
-             ["6", ".", ".", "1", "9", "5", ".", ".", "."],
-             [".", "9", "8", ".", ".", ".", ".", "6", "."],
-             ["8", ".", ".", ".", "6", ".", ".", ".", "3"],
-             ["4", ".", ".", "8", ".", "3", ".", ".", "1"],
-             ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
-             [".", "6", ".", ".", ".", ".", "2", "8", "."],
-             [".", ".", ".", "4", "1", "9", ".", ".", "5"],
-             [".", ".", ".", ".", "8", ".", ".", "7", "9"]]
-
-    x.isValidSudoku(board)
+    print(x.findUnsortedSubarray([2, 1]))
