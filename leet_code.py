@@ -6,7 +6,7 @@ import collections
 from copy import deepcopy
 from functools import cache
 from itertools import groupby
-from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
+# from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
 from collections import deque, Counter
 from itertools import permutations, combinations
 
@@ -1655,6 +1655,29 @@ class Solution:
 
         return right - left + 1 if right - left > 0 else 0
 
+    def transpose(self, matrix):
+        new_matrix = [[0] * len(r) for r in matrix]
+
+        for i in range(len(matrix)):
+            for j in range(len(matrix[0])):
+                new_matrix[j][i] = matrix[i][j]
+
+        return new_matrix
+
+    def merge(self, nums1, m: int, nums2, n: int) -> None:
+        """
+        Do not return anything, modify nums1 in-place instead.
+        """
+        i, j, k = m - 1, n - 1, len(nums1) - 1
+        while j >= 0:
+            if nums2[j] >= nums1[i]:
+                nums1[k] = nums2[j]
+                i, j, k = i - 1, j - 1, k - 1
+
+            else:
+                nums1[k], nums1[i] = nums1[i], nums1[k]
+                i, k = i - 1, k - 1
+
 
 if __name__ == '__main__':
     x = Solution()
@@ -1677,4 +1700,4 @@ if __name__ == '__main__':
 
     arr = [1]
     root = TreeNode().create_from_list(arr)
-    print(x.findUnsortedSubarray([2, 1]))
+    print(x.merge(nums1=[1, 2, 3, 0, 0, 0], m=3, nums2=[2, 5, 6], n=3))
