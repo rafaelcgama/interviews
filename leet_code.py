@@ -1,14 +1,17 @@
+import copy
 import math
 import json
 import heapq
 import bisect
 import collections
+from typing import *
 from copy import deepcopy
 from functools import cache
 from itertools import groupby
 # from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
-from collections import deque, Counter
-from itertools import permutations, combinations
+from collections import deque, Counter, defaultdict
+from itertools import permutations, combinations, accumulate, product
+import operator
 
 
 class Node:
@@ -679,6 +682,28 @@ class Solution:
 
         return nums
 
+    def removeDuplicates2(self, nums):
+        # l, r = 0, 1
+        # while r <= len(nums) - 1:
+        #     if nums[r] > nums[l]:
+        #         nums[l + 1], nums[r] = nums[r], nums[l + 1]
+        #         l += 1
+        #         r += 1
+        #
+        #     else:
+        #         r += 1
+        #
+        # return l + 1
+
+        l = 1
+
+        for r in range(1, len(nums)):
+            if nums[r] != nums[r - 1]:
+                nums[l] = nums[r]
+                l += 1
+
+        return l
+
     def addDigits(self, num):
         if not num:
             return num
@@ -1123,31 +1148,29 @@ class Solution:
         return "/" + "/".join(stack)
 
     def addTwoNumbers(self, l1, l2):
-        def reverse_list(head):
-            number = 0
-            i = 0
-            while head:
-                number += (head.item * 10 ** i)
-                i += 1
-                head = head.next
+        """
+        The fact that it asks everything in reverse actually make it easier since in a manual sum you start with the
+        numbers from the back.
+        """
+        dummy_head = tail = ListNode()
 
-            return number
+        carry = 0
+        while l1 or l2 or carry:
+            v1 = l1.val if l1 else 0
+            v2 = l2.val if l2 else 0
 
-        def convert_linked_list(num):
-            if not num:
-                return ListNode(val=num)
+            # new digit
+            val = v1 + v2 + carry
+            carry = val // 10
+            val = val % 10
+            tail.next = ListNode(val)
 
-            dummy_head = tail = ListNode()
-            while num:
-                tail.next = ListNode(item=num % 10)
-                tail = tail.next
-                num //= 10
+            # update lists
+            tail = tail.next
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
 
-            return dummy_head.next
-
-        num1, num2 = reverse_list(l1), reverse_list(l2)
-
-        return convert_linked_list(num1 + num2)
+        return dummy_head.next
 
     def rotateRight(self, head, k):
         if not head:
@@ -1216,7 +1239,7 @@ class Solution:
         return ''.join(stack)
 
     def copyRandomList(self, head):
-        node_map = {}
+        node_map = {None: None}
 
         cur = head
         while cur:
@@ -1226,9 +1249,8 @@ class Solution:
 
         cur = head
         while cur:
-            copy = node_map[cur]
-            copy.next = node_map[cur.next]
-            copy.random = node_map[copy.random]
+            node_map[cur].next = node_map[cur.next]
+            node_map[cur].random = node_map[cur.random]
             cur = cur.next
 
         return node_map[head]
@@ -1328,7 +1350,7 @@ class Solution:
         arr.sort()
         cnt = Counter(arr)  # obtain the number of instances of each number
         res, i, l = 0, 0, len(arr)
-        while i < l:  # in replacement of the for-loop, so that we can increment i by more than 1
+        while i < l:  # in replacement of the for-loop, so that we can increment by more than 1
             j, k = i, l - 1  # j should be the leftmost index, hence j=i instead of j=i+1
             while j < k:  # i <= j < k; arr[i] <= arr[j] <= arr[k]
                 if arr[i] + arr[j] + arr[k] < target:
@@ -1678,26 +1700,400 @@ class Solution:
                 nums1[k], nums1[i] = nums1[i], nums1[k]
                 i, k = i - 1, k - 1
 
+    def wordPattern(self, pattern, s):
+        pattern_dict, values, new_s = dict(), set(), s.split()
+        if len(pattern) == len(new_s):
+            for a, b in zip(pattern, new_s):
+                if a not in pattern_dict and b not in values:
+                    pattern_dict[a] = b
+                    values.add(b)
+                    continue
+
+                if a in pattern and pattern_dict[a] != b:
+                    return False
+
+            return True
+
+        return False
+
+    def minDeletionSize(self, strs: str) -> int:
+        col_dict, idx_del = collections.defaultdict(lambda: ''), set()
+        for s in strs:
+            for i, c in enumerate(s):
+                if i in idx_del:
+                    continue
+
+                if col_dict[i] and col_dict[i][-1] > c:
+                    idx_del.add(i)
+                    continue
+
+                else:
+                    col_dict[i] += c
+
+        return len(idx_del)
+
+    def maxProfit(self, prices):
+        max_profit = 0
+
+        for i in range(1, len(prices)):
+            if prices[i] > prices[i - 1]:
+                max_profit += (prices[i] - prices[i - 1])
+
+        return max_profit
+
+    def rotate(self, nums, k):
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        k, length = k % len(nums), len(nums) - 1
+        nums[:k], nums[k:] = nums[-k:], nums[:len(nums) - k]
+
+    def intersect(self, nums1, nums2):
+        # c = Counter(nums1)
+        # res = []
+        #
+        # for n in nums2:
+        #     if c[n] > 0:
+        #         res.append(n)
+        #         c[n] -= 1
+        #
+        # return res
+
+        # If it was sorted
+        i, j = 0, 0
+        res = []
+
+        nums1.sort()
+        nums2.sort()
+
+        while i < len(nums1) and j < len(nums2):
+            if nums1[i] < nums2[j]:
+                i += 1
+
+            elif nums1[i] > nums2[j]:
+                j += 1
+
+            else:
+                res.append(nums1[i])
+                i += 1
+                j += 1
+
+        return res
+
+    def plusOne(self, digits):
+        start = len(digits) - 1
+        if digits[-1] == 9:
+            digits.append(0)
+            start -= 1
+
+        for i in range(start, -1, -1):
+            if digits[i] < 9:
+                digits[i] += 1
+                break
+
+            else:
+                digits[i] = 0
+
+        return digits
+
+    def gcdOfStrings(self, str1: str, str2: str) -> str:
+        len1, len2 = len(str1), len(str2)
+
+        def is_divisor(idx):
+            # Check if the division has remainders, it can't have
+            if (len1 % idx) or (len2 % idx):
+                return False
+            factor1, factor2 = len1 // idx, len2 // idx
+            return (str1[:idx] * factor1 == str1) and (str1[:idx] * factor2 == str2)
+
+        for idx in range(min(len1, len2), 0, -1):
+            if is_divisor(idx):
+                return str1[:idx]
+
+        return ""
+
+    def moveZeroes(self, nums):
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        l = 0
+        for r in range(len(nums)):
+            if nums[r]:
+                nums[l], nums[r] = nums[r], nums[l]
+                l += 1
+
+        return nums
+
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        hashset = set()
+
+        for n in nums:
+            if n in hashset:
+                return True
+            hashset.add(n)
+        return False
+
+    def isAnagram(self, s: str, t: str) -> bool:
+        if len(s) != len(t):
+            return False
+
+        countS, countT = {}, {}
+
+        for i in range(len(s)):
+            countS[s[i]] = 1 + countS.get(s[i], 0)
+            countT[t[i]] = 1 + countT.get(t[i], 0)
+        return countS == countT
+
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        ans = collections.defaultdict(list)
+
+        for s in strs:
+            count = [0] * 26
+            for c in s:
+                count[ord(c) - ord("a")] += 1
+            ans[tuple(count)].append(s)
+        return ans.values()
+
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        # # O(nlogn) because the most_common() function performs a sort which as complexity O(nlogn)
+        # return [x[0] for x in Counter(nums).most_common(k)]
+
+        # O(n)
+        count = Counter(nums)
+        freq = [[] for i in range(len(nums) + 1)]
+
+        for n, c in count.items():
+            freq[c].append(n)
+
+        res = []
+        for i in range(len(freq) - 1, 0, -1):
+            for n in freq[i]:
+                res.append(n)
+                if len(res) == k:
+                    return res
+
+    def productExceptSelf(self, nums):
+        # # O(n) time and space
+        # prefix = list(accumulate(nums, func=operator.mul))
+        # postfix = list(reversed(list(accumulate(reversed(nums), func=operator.mul))))
+        # result = [postfix[1]] + ([0] * (len(nums) - 2)) + [prefix[len(nums) - 2]]
+        #
+        # for i in range(1, len(nums) - 1):
+        #     result[i] = prefix[i - 1] * postfix[i + 1]
+        #
+        # return result
+
+        # O(n) time and O(1) space. Problem doesn't count the result as extra space.
+        result = [1] * len(nums)
+
+        prefix = 1
+        for i in range(len(nums)):
+            result[i] = prefix
+            prefix *= nums[i]
+
+        postfix = 1
+        for i in range(len(nums) - 1, -1, -1):
+            result[i] *= postfix
+            postfix *= nums[i]
+
+        return result
+
+    def encode(self, mylist):
+        result = []
+        for word in mylist:
+            result.append(chr(len(word)))
+            result.append(word)
+        return ''.join(result)
+
+    def decode(self, mystring):
+        result = []
+        i = 0
+
+        while i < len(mystring):
+            word_len = ord(mystring[i])
+            i += 1
+
+            word = mystring[i: i + word_len]
+            result.append(word)
+
+            i += word_len
+
+        return result
+
+    def longestConsecutive(self, nums: List[int]) -> int:
+        # if not len(nums):
+        #     return 0
+        #
+        # nums = sorted(set(nums))
+        # max_len, curr_len = 1, 1
+        #
+        # for i in range(len(nums) - 1):
+        #     if nums[i] + 1 == nums[i + 1]:
+        #         curr_len += 1
+        #     else:
+        #         max_len = max(max_len, curr_len)
+        #         curr_len = 1
+        #
+        # return max(max_len, curr_len)
+
+        # O(n) solution
+        nums_set = set(nums)
+        max_len = 0
+        for num in nums:
+            # Check if it's the start of a sequence
+            if (num - 1) not in nums_set:
+                length = 0
+                while (num + length) in nums_set:
+                    length += 1
+                max_len = max(max_len, length)
+
+        return max_len
+
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        res = []
+
+        for i, a in enumerate(nums):
+            if i > 0 and a == nums[i - 1]:
+                continue
+
+            l, r = i + 1, len(nums) - 1
+            while l < r:
+                three_sum = a + nums[l] + nums[r]
+                if three_sum > 0:
+                    r -= 1
+                elif three_sum < 0:
+                    l += 1
+                else:
+                    res.append([a, nums[l], nums[r]])
+                    l += 1
+                    while nums[l] == nums[l - 1] and l < r:
+                        l += 1
+        return res
+
+    def reorderList(self, head: Optional[ListNode]) -> None:
+        """
+        Do not return anything, modify head in-place instead.
+        """
+        # Find middle
+        slow, fast = head, head.next
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+
+        # reverse second half
+        second = slow.next
+        previous = None
+
+        while second:
+            next_node = second.next
+            second.next = previous
+            previous = second
+            second = next_node
+
+        # merge two halfs
+        first, second = head, previous
+        while second:
+            tmp1, tmp2 = first.next, second.next
+            first.next = second
+            second.next = tmp1
+            first, second = tmp1, tmp2
+
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        dummy = l = ListNode(0, head)
+        r = head
+
+        while n > 0 and r:
+            r = r.next
+            n -= 1
+
+        while r:
+            l, r = l.next, r.next
+
+        # delete
+        l.next = l.next.next
+
+        return dummy.next
+
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+
+        def dfs(root):
+            if not root:
+                return None
+            root.left, root.right = root.right, root.left
+            dfs(root.left)
+            dfs(root.right)
+
+        dfs(root)
+        return root
+
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        # # BFS
+        # q = deque()
+        # if root:
+        #     q.append(root)
+        #
+        # level = 0
+        #
+        # while q:
+        #
+        #     for i in range(len(q)):
+        #         node = q.popleft()
+        #         if node.left:
+        #             q.append(node.left)
+        #         if node.right:
+        #             q.append(node.right)
+        #     level += 1
+        # return level
+        #
+        # # ITERATIVE DFS
+        # stack = [[root, 1]]
+        # res = 0
+        #
+        # while stack:
+        #     node, depth = stack.pop()
+        #
+        #     if node:
+        #         res = max(res, depth)
+        #         stack.append([node.left, depth + 1])
+        #         stack.append([node.right, depth + 1])
+        # return res
+
+        # RECURSIVE DFS
+        self.levels = 0
+        def dfs(node, level=0):
+            if not node:
+                self.levels = max(self.levels, level)
+            else:
+                dfs(node.left, level + 1)
+                dfs(node.right, level + 1)
+
+        dfs(root, 0)
+        return self.levels
+
 
 if __name__ == '__main__':
     x = Solution()
+    tree = TreeNode().create_from_list([3, 9, 20, None, None, 15, 7])
+    x.maxDepth(tree)
 
-    node1 = ListNode(item=7)
-    node2 = ListNode(item=13)
-    node3 = ListNode(item=11)
-    node4 = ListNode(item=10)
-    node5 = ListNode(item=1)
+    # node1 = ListNode(item=7)
+    # node2 = ListNode(item=13)
+    # node3 = ListNode(item=11)
+    # node4 = ListNode(item=10)
+    # node5 = ListNode(item=1)
+    #
+    # node1.next = node2
+    # node1.random = None
+    # node2.next = node3
+    # node2.random = node1
+    # node3.next = node4
+    # node3.random = node5
+    # node4.next = node5
+    # node4.random = node3
+    # node5.random = node1
+    # x.copyRandomList(node1)
 
-    node1.next = node2
-    node1.random = None
-    node2.next = node3
-    node2.random = node1
-    node3.next = node4
-    node3.random = node5
-    node4.next = node5
-    node4.random = node3
-    node5.random = node1
-
-    arr = [1]
-    root = TreeNode().create_from_list(arr)
-    print(x.merge(nums1=[1, 2, 3, 0, 0, 0], m=3, nums2=[2, 5, 6], n=3))
+    #
+    # arr = [1]
+    # root = TreeNode().create_from_list(arr)
+    # print(x.merge(nums1=[1, 2, 3, 0, 0, 0], m=3, nums2=[2, 5, 6], n=3))
