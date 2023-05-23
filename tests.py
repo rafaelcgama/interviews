@@ -65,50 +65,58 @@ class TreeNode:
         return root_node
 
 
-class Solution:
+def parse_config(path: str) -> dict:
+    """
+    Parses an INI configuration file and returns the configuration data as a dictionary.
+    """
+    config = {}
+    section = None
 
-    def championship(self, races, points):
-        racer_points = defaultdict(int)
-        for x, race in enumerate(races):
-            print(f"race {x + 1}")
-            print("rider           points")
-            print("-----------------------")
-            for i, racer in enumerate(race):
-                if i == 0:
-                    racer_points[racer] += points[i]
-                elif i == 1:
-                    racer_points[racer] += points[i]
+    with open(path, 'r') as f:
+        for line in f:
+            line = line.strip()
 
-                elif i == 2:
-                    racer_points[racer] += points[i]
+            # Skip comments and blank lines
+            if not line or line.startswith(';'):
+                continue
 
-                else:
-                    racer_points[racer] += 0
+            # Check for section headers
+            if line.startswith('[') and line.endswith(']'):
+                section = line[1:-1]
+                config[section] = {}
+            else:
+                # Parse key-value pairs
+                key, value = line.split('=', maxsplit=1)
+                key = key.strip()
+                value = value.strip()
 
-            for x, y in Counter(racer_points).most_common():
-                print(x + "----------" + str(y))
-            print("")
+                # Convert value to appropriate type
+                if value.isdigit() or value[1:].isdigit():
+                    value = int(value)
+                elif value.replace('.', '', 1).isdigit():
+                    value = float(value)
+                elif value.lower() == 'yes' or value.lower() == 'true' or value.lower() == 'on':
+                    value = True
+                elif value.lower() == 'false' or value.lower() == 'off':
+                    value = False
 
-if __name__ == "__main__":
-    x = Solution()
-    races = [
-        ["lorenzo", "hayden", "dovizioso", "rossi", "marquez"],
-        ["marquez", "hayden", "rossi", "dovizioso", "lorenzo"],
-        ["rossi", "lorenzo", "dovizioso", "hayden", "marquez"],
-        ["dovizioso", "marquez", "rossi", "lorenzo", "hayden"],
-        ["marquez", "dovizioso", "rossi", "lorenzo", "hayden"],
-        ["marquez", "dovizioso", "hayden", "rossi", "lorenzo"],
-        ["marquez", "dovizioso", "hayden", "lorenzo", "rossi"],
-        ["marquez", "rossi", "lorenzo", "hayden", "dovizioso"],
-        ["lorenzo", "marquez", "rossi", "dovizioso", "hayden"],
-        ["marquez", "dovizioso", "hayden", "lorenzo", "rossi"]
-    ]
+                config[section][key] = value
 
-    points = {
-        0: 15,
-        1: 10,
-        2: 5
-    }
-    x.championship(races, points)
+    return config
 
 
+output = parse_config("interview_questions/cash_app/generic.ini")
+
+expected = {
+    "section": {
+        "b": False,
+        "f": 206.201,
+        "i": -55,
+        "i1": 1,
+        "b1": True,
+        "b2": False,
+        "s": "",
+    },
+}
+
+assert output == expected

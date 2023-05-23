@@ -18,7 +18,9 @@ class Stack:
         return val
 
     def push(self, val):
-        self.stack = Node(val, self.stack)
+        self.stack = Node(val=val,
+                          next_=self.stack
+                          )
 
     def is_empty(self):
         return True if self.stack is None else False

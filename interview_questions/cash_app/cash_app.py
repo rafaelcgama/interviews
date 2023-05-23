@@ -158,6 +158,7 @@ hayden          35
 
 def championship2(races, points):
     racer_points = defaultdict(int)
+
     for x, race in enumerate(races):
         print(f"race {x + 1}")
         print("rider           points")
@@ -220,6 +221,7 @@ def championship3(races, points):
     racer_points = defaultdict(int)
     num_races = len(races)
     is_over = False
+
     for x, race in enumerate(races):
         print(f"race {x + 1}")
         if is_over:

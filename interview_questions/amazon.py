@@ -17,18 +17,42 @@ import math
 from time import time
 from itertools import combinations
 
+# # Does not work in leetcode
+# def myproduct_with_zero(arr):
+#     result = [0] * len(arr)
+#     zero_count = arr.count(0)
+#     if not zero_count:
+#         for i in range(len(arr)):
+#             result[i] = math.prod(arr) // arr[i]
+#
+#     elif zero_count == 1:
+#         new_arr, zero_idx = list(arr), arr.index(0)
+#         del new_arr[zero_idx]
+#         result[zero_idx] = math.prod(new_arr)
+#
+#     return result
 
-def myproduct_with_zero(arr):
-    result = [0] * len(arr)
-    zero_count = arr.count(0)
-    if not zero_count:
+def myproduct_with_zero(nums):
+    def prod(arr):
+        total = 1
+        zero_idx = []
         for i in range(len(arr)):
-            result[i] = math.prod(arr) // arr[i]
+            if arr[i] != 0:
+                total *= arr[i]
+            else:
+                zero_idx.append(i)
+                if len(zero_idx) == 2:
+                    break
+        return total, zero_idx
 
-    elif zero_count == 1:
-        new_arr, zero_idx = list(arr), arr.index(0)
-        del new_arr[zero_idx]
-        result[zero_idx] = math.prod(new_arr)
+    result = [0] * len(nums)
+    myprod, zero_idx = prod(nums)
+    if len(zero_idx) == 1:
+        result[zero_idx[0]] = myprod
+
+    elif not zero_idx:
+        for i in range(len(nums)):
+            result[i] = myprod // nums[i]
 
     return result
 
