@@ -47,12 +47,12 @@ def myproduct_with_zero(nums):
 
     result = [0] * len(nums)
     myprod, zero_idx = prod(nums)
-    if len(zero_idx) == 1:
-        result[zero_idx[0]] = myprod
-
-    elif not zero_idx:
+    if not zero_idx:
         for i in range(len(nums)):
             result[i] = myprod // nums[i]
+
+    elif len(zero_idx) == 1:
+        result[zero_idx[0]] = myprod
 
     return result
 
