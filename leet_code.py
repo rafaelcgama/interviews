@@ -2060,6 +2060,7 @@ class Solution:
 
         # RECURSIVE DFS
         self.levels = 0
+
         def dfs(node, level=0):
             if not node:
                 self.levels = max(self.levels, level)

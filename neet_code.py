@@ -84,7 +84,7 @@ class Solution:
         #     key = "".join(sorted(s))
         #     mydict[key] = mydict.get(key, list()) + [s]
         #
-        # return [mydict[k] for k in mydict]
+        # return mydict.values()
 
         """
         Time complexity: O(m x n)
@@ -114,7 +114,7 @@ class Solution:
         Space complexity: O(n)
         Easiest way is to count the elements, sort (most_common function) and return the k most common.
         """
-        # return [c[0] for c in Counter(nums).most_common(k)]
+        # return Counter(nums).most_common(k).values()
 
         """
         Time complexity: O(n)
@@ -127,7 +127,7 @@ class Solution:
         freq = [[] for _ in range(len(nums) + 1)]
 
         # Now we use the count as an index to fill the freq list. This is done to make sure that the numbers with the
-        # highest count are in the leftmost portion of the list, so we can iterate it in reverse in the next step
+        # highest count are in the rightmost portion of the list, so we can iterate it in reverse in the next step
         # to find out the most common numbers.
         for n, c in count.items():
             freq[c].append(n)
@@ -135,7 +135,7 @@ class Solution:
         res = []
         # Now we iterate the freq list in reverse and iterate the list in each index. The iteration will stop when res
         # has the size of k
-        for i, _ in reversed(list(enumerate(freq))):
+        for i in range(len(freq) - 1, -1, -1):
             for n in freq[i]:
                 res.append(n)
                 if len(res) == k:
@@ -167,13 +167,13 @@ class Solution:
 
         """
         Time complexity: O(n)
-        Space complexity: O(n) * in the context of the problem
+        Space complexity: O(n) in the context of the problem
         This version is slightly more performative because, as per problem's conditions, the "res" list is not 
         considered extra memory and we don't use waste runtime and extra memory calculating prefix/postfix as they 
         are calculated in loops in O(1) time and using O(1) memory.
         First a result array is created and having the same size as nums.
         Then we set prefix/postfix to 1 to aid in their calculations as because nums[0] will go to result[1] and that's
-        when the accumulation starts. Same thing true in descending order but since the the prefix is already in result
+        when the accumulation starts. The same is true in descending order but since the the prefix is already in result
         nums[-1] will multiply nums[-1] 
         """
         res = [1] * len(nums)
@@ -230,7 +230,7 @@ class Solution:
             result += (chr(len(word)) + word)
         return result
 
-    def decode(self, encoded: str):
+    def decode(self, encoded: str) -> List:
         result = []
         i = 0
 
@@ -248,9 +248,10 @@ class Solution:
     # 128. Longest Consecutive Sequence (https://leetcode.com/problems/longest-consecutive-sequence/)
     def longestConsecutive(self, nums: List[int]) -> int:
         """
-        The trick here is to first convert the list into a set for 2 reason. First: it will eliminate duplicates
-        Second: checking in a set is a O(1) operation whereas a list is O(n). Then we create variable to keep track of
-        the max_len
+        The trick here is to first convert the list into a set for 2 reasons.
+        First: it will eliminate duplicates
+        Second: checking in a set is a O(1) operation whereas in a list is O(n). Then we create variable to keep track
+        of the max_len
         """
         nums_set, max_len = set(nums), 0
 
@@ -268,6 +269,7 @@ class Solution:
         return max_len
 
     # TODO ## Two Pointers ##
+    # 125. Valid Palindrome (https://leetcode.com/problems/valid-palindrome/)
     def isPalindrome(self, s: str) -> bool:
         l, r = 0, len(s) - 1
         while l < r:
@@ -281,6 +283,7 @@ class Solution:
             r -= 1
         return True
 
+    # 167. Two Sum II - Input Array Is Sorted (https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
     # Could write own alphanumeric function
     def alphanum(self, c):
         return (
@@ -302,7 +305,8 @@ class Solution:
             else:
                 return [l + 1, r + 1]
 
-    def threSum(self, nums):
+    # 15. 3Sum (https://leetcode.com/problems/3sum/)
+    def threeSum(self, nums):
         """
         Easiest solution and most ineficient is a triple nested loop O(nˆ3).
         Time complexity: O(nˆ2)
@@ -328,12 +332,13 @@ class Solution:
                     l += 1
                 else:
                     res.append([a, nums[l], nums[r]])
-                    l += 1  # It is necessary to update the left point here so the loop in line 322 continues
-                    # This is necessary for the same reason as in line 319. To avoid repeated solutions
+                    l += 1  # It is necessary to update the left point here so the loop in line 324 continues
+                    # This is necessary for the same reason as in line 320. To avoid repeated solutions
                     while nums[l] == nums[l - 1] and l < r:
                         l += 1
             return res
 
+    # 11. Container With Most Water (https://leetcode.com/problems/container-with-most-water/)
     def maxArea(self, height: List[int]) -> int:
         res, l, r = 0, 0, len(height) - 1
 
@@ -348,7 +353,7 @@ class Solution:
         return res
 
     # TODO ## Stack ##
-
+    # 20. Valid Parentheses (https://leetcode.com/problems/valid-parentheses/)
     def isValid(self, s: str) -> bool:
         mymap = {
             "}": "{",
@@ -365,29 +370,24 @@ class Solution:
             stack.pop()
         return not stack
 
+    class MinStack:
+        def __init__(self):
+            self.stack = []
+            self.minStack = []
 
-class MinStack:
-    def __init__(self):
-        self.stack = []
-        self.minStack = []
+        def push(self, val: int) -> None:
+            self.stack.append(val)
+            val = min(val, self.minStack[-1] if self.minStack else val)
+            self.minStack.append(val)
 
-    def push(self, val: int) -> None:
-        self.stack.append(val)
-        val = min(val, self.minStack[-1] if self.minStack else val)
-        self.minStack.append(val)
+        def pop(self) -> None:
+            self.stack.pop()
+            self.minStack.pop()
 
-    def pop(self) -> None:
-        self.stack.pop()
-        self.minStack.pop()
+        def top(self) -> int:
+            return self.stack[-1]
 
-    def top(self) -> int:
-        return self.stack[-1]
-
-    def getMin(self) -> int:
-        return self.minStack[-1]
-
-
-class Solution:
+    # 150. Evaluate Reverse Polish Notation (https://leetcode.com/problems/evaluate-reverse-polish-notation/)
     def evalRPN(self, tokens: List[str]) -> int:
         stack = []
         for c in tokens:
@@ -406,7 +406,105 @@ class Solution:
 
         return stack[0]
 
+    # 22. Generate Parentheses (https://leetcode.com/problems/generate-parentheses/)
+    def generateParenthesis(self, n: int) -> List[str]:
+        # only add open parenthesis if open < n
+        # only add a closing parenthesis if closed < open
+        # valid IF open == closed == n
+
+        stack, res = [], []
+
+        def backtrack(open_n, closed_n):
+            if open_n == closed_n == n:
+                res.append("".join(stack))
+                return
+
+            if open_n < n:
+                stack.append("(")
+                backtrack(open_n + 1, closed_n)
+                stack.pop()
+
+            if closed_n < open_n:
+                stack.append(")")
+                backtrack(open_n, closed_n + 1)
+                stack.pop()
+
+        backtrack(0, 0)
+        return res
+
+    # 739. Daily Temperatures (https://leetcode.com/problems/daily-temperatures/)
+    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+        # O(n)
+        answer = [0] * len(temperatures)
+        stack = []
+
+        for i, t in enumerate(temperatures):
+            while stack and t > stack[-1][0]:
+                stack_temp, stack_idx = stack.pop()
+                answer[stack_idx] = (i - stack_idx)
+            stack.append((t, i))
+
+        return answer
+
+    # 853. Car Fleet (https://leetcode.com/problems/car-fleet/)
+    def carFleet(self, target: int, position: List[int], speed: List[int]) -> int:
+        p_s = list(zip(position, speed))  # Join both for practicality
+        p_s.sort(key=lambda x: x[0])
+
+        stack = []
+        for p, s in reversed(p_s):
+            eta = (target - p) / s
+            stack.append(eta)
+            if len(stack) >= 2 and stack[-1] <= stack[-2]:
+                stack.pop()
+
+        return len(stack)
+
+    # 704. Binary Search (https://leetcode.com/problems/binary-search/)
+    def search(self, nums: List[int], target: int) -> int:
+        l, r = 0, len(nums) - 1
+        mid = (l + r) // 2
+
+        while l <= r:
+            if nums[mid] == target:
+                return mid
+
+            if nums[mid] > target:
+                r = mid - 1
+
+            else:
+                l = mid + 1
+
+        return -1
+
+    # 74. Search a 2D Matrix (https://leetcode.com/problems/search-a-2d-matrix/)
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        ROWS, COLS = len(matrix), len(matrix[0])
+
+        row, top, bot = 0, 0, ROWS - 1
+        while top <= bot:
+            row = (top + bot) // 2
+            if target > matrix[row][-1]:
+                top = row + 1
+            elif target < matrix[row][0]:
+                bot = row - 1
+            else:
+                break
+        else:
+            return False
+
+        l, r = 0, COLS - 1
+        while l <= r:
+            m = (l + r) // 2
+            if target > matrix[row][m]:
+                l = m + 1
+            elif target < matrix[row][m]:
+                r = m - 1
+            else:
+                return True
+        return False
+
 
 if __name__ == "__main__":
     s = Solution()
-    print(s.productExceptSelf([1, 2, 3, 4]))
+    print(s.dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73]))
