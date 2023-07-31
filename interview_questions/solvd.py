@@ -57,3 +57,80 @@ class MyTests(unittest.TestCase):
 
     def test3(self):
         self.assertEqual(group_anagrams(["listen", "ooggle", "hell", "hello"]), [])
+
+
+"""
+without using a JSON library, print the JSON string representation of the input python object, Test cases ignore 
+whitespace and array ordering
+
+for reference therese are all the valid JSON data type:
+- JSON object (key-value pair with string keys)
+- array
+- string
+- number
+- boolean
+-null
+
+input : a python object
+output: the json string representation of the object
+"""
+
+
+def json_stringify(obj):
+    # Helper function to handle each data type recursively
+    def json_str_obj(element):
+        if isinstance(element, dict):  # JSON object
+            pairs = []
+            for key, value in sorted(element.items()):  # Sort keys to ignore ordering
+                pairs.append(f'"{key}":{json_str_obj(value)}')
+            return "{" + ",".join(pairs) + "}"
+
+        elif isinstance(element, list):  # Array
+            elements = [json_str_obj(item) for item in element]
+            return "[" + ",".join(elements) + "]"
+
+        elif isinstance(element, str):  # String
+            return f'"{element}"'
+
+        elif isinstance(element, (int, float)):  # Number (integer or float)
+            return str(element)
+
+        elif isinstance(element, bool):  # Boolean
+            return str(element).lower()
+
+        elif element is None:  # Null
+            return "null"
+
+    return json_str_obj(obj)
+
+"""
+implement the "find_smallest_interval(numbers)" function which return the smallest positive interval between two values 
+of the numbers list
+"""
+def find_smallest_interval(numbers):
+    # Step 1: Sort the numbers list in ascending order
+    numbers.sort()
+
+    smallest_interval = float('inf')
+    for i in range(1, len(numbers)):
+        diff = numbers[i] - numbers[i - 1]
+        if 0 < diff < smallest_interval:
+            smallest_interval = diff
+
+    return smallest_interval
+
+"""
+we call a integer a "duodigit" if its decimal representation uses no more than two different digits. For example, 12, 
+110, -33333 are duodigits, but 102 is not
+
+implement the function is_duo_digit(number which returns a string )
+"""
+
+def is_duo_digit(number):
+    myset = set()
+    number = abs(number)
+    while number:
+        myset.add(number % 10)
+        number //= 10
+
+    return "y" if myset <= 2 else "n"
