@@ -20,7 +20,7 @@ from typing import List
 
 
 def group_anagrams(mylist: List[str]) -> List[List[str]]:
-    # # O nlogn because of the sorted function
+    ## Onlogn
     # res = defaultdict(list)
     # for s in mylist:
     #     key = "".join(sorted(s))
@@ -76,37 +76,37 @@ output: the json string representation of the object
 """
 
 
-def json_stringify(obj):
+def json_stringify(element):
     # Helper function to handle each data type recursively
-    def json_str_obj(element):
-        if isinstance(element, dict):  # JSON object
-            pairs = []
-            for key, value in sorted(element.items()):  # Sort keys to ignore ordering
-                pairs.append(f'"{key}":{json_str_obj(value)}')
-            return "{" + ",".join(pairs) + "}"
+    if isinstance(element, dict):  # JSON object
+        pairs = []
+        for key, value in element.items():
+            pairs.append(f'"{key}": {json_stringify(value)}')
+        return "{" + ",".join(pairs) + "}"
 
-        elif isinstance(element, list):  # Array
-            elements = [json_str_obj(item) for item in element]
-            return "[" + ",".join(elements) + "]"
+    elif isinstance(element, list):  # List
+        elements = [json_stringify(item) for item in element]
+        return "[" + ",".join(elements) + "]"
 
-        elif isinstance(element, str):  # String
-            return f'"{element}"'
+    elif isinstance(element, str):  # String
+        return f'"{element}"'
 
-        elif isinstance(element, (int, float)):  # Number (integer or float)
-            return str(element)
+    elif isinstance(element, (int, float)):  # Number (integer or float)
+        return str(element)
 
-        elif isinstance(element, bool):  # Boolean
-            return str(element).lower()
+    elif isinstance(element, bool):  # Boolean
+        return str(element).lower()
 
-        elif element is None:  # Null
-            return "null"
+    elif element is None:  # Null
+        return "null"
 
-    return json_str_obj(obj)
 
 """
 implement the "find_smallest_interval(numbers)" function which return the smallest positive interval between two values 
 of the numbers list
 """
+
+
 def find_smallest_interval(numbers):
     # Step 1: Sort the numbers list in ascending order
     numbers.sort()
@@ -119,12 +119,13 @@ def find_smallest_interval(numbers):
 
     return smallest_interval
 
-"""
-we call a integer a "duodigit" if its decimal representation uses no more than two different digits. For example, 12, 
-110, -33333 are duodigits, but 102 is not
 
-implement the function is_duo_digit(number which returns a string )
 """
+we call a integer a "duo-digit" if its decimal representation uses no more than two different digits. For example, 12, 
+110, -33333 are duo-digits, but 102 is not. 
+Implement the function is_duo_digit(number which returns a string )
+"""
+
 
 def is_duo_digit(number):
     myset = set()
@@ -134,3 +135,11 @@ def is_duo_digit(number):
         number //= 10
 
     return "y" if myset <= 2 else "n"
+
+
+# write the body of the next_week(d) func that return  date 7 days after the date given output
+from datetime import timedelta
+
+
+def next_week(d):
+    return d + timedelta(days=7)

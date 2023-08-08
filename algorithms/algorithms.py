@@ -1,6 +1,6 @@
 # DFS recursive
 def dfs(tree):
-    if tree is not None:
+    if tree:
         print(tree)
         dfs(tree.left)
         dfs(tree.right)

@@ -115,9 +115,8 @@ class Solution:
         Easiest way is to count the elements, sort (most_common function) and return the k most common.
         """
         # return Counter(nums).most_common(k).values()
-
         """
-        Time complexity: O(n)
+        Time complexity: O(m x n) 
         Space complexity: O(n)
         """
         # First we count the elements in a dict
@@ -147,11 +146,11 @@ class Solution:
         Time complexity: O(n)
         Space complexity: O(n)
         Ex. [1, 2, 3, 4]
-        In order to know the product of the array except itself, it is necessary to product of the numbers that come
-        before i (prefix) and of those that come after(postfix).
+        In order to know the product of the array except itself, it is necessary to calculate the product of the
+        numbers that come before i (prefix) and of those that come after(postfix).
         So we create a list that multiplies its element in increasing order which will result in [1, 2, 6, 12] and do
         the same in inverse order resulting [24, 24, 12, 4]
-        Finally, we would use the calculation in line 159 to multiply the prefix number before i and the postfix number
+        Finally, we would use the calculation in line 160 to multiply the prefix number before i and the postfix number
         after i.
         To facilitate we can input the first and last elements of the result list beforehand as they are predictable.
         """
@@ -171,7 +170,7 @@ class Solution:
         This version is slightly more performative because, as per problem's conditions, the "res" list is not 
         considered extra memory and we don't use waste runtime and extra memory calculating prefix/postfix as they 
         are calculated in loops in O(1) time and using O(1) memory.
-        First a result array is created and having the same size as nums.
+        First a result array is created and having the same size as nums and populated by "1"s.
         Then we set prefix/postfix to 1 to aid in their calculations as because nums[0] will go to result[1] and that's
         when the accumulation starts. The same is true in descending order but since the the prefix is already in result
         nums[-1] will multiply nums[-1] 
@@ -283,7 +282,6 @@ class Solution:
             r -= 1
         return True
 
-    # 167. Two Sum II - Input Array Is Sorted (https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
     # Could write own alphanumeric function
     def alphanum(self, c):
         return (
@@ -292,6 +290,7 @@ class Solution:
                 or ord("0") <= ord(c) <= ord("9")
         )
 
+    # 167. Two Sum II - Input Array Is Sorted (https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
     def twoSum(self, numbers: List[int], target: int) -> List[int]:
         l, r = 0, len(numbers) - 1
 
@@ -306,9 +305,9 @@ class Solution:
                 return [l + 1, r + 1]
 
     # 15. 3Sum (https://leetcode.com/problems/3sum/)
-    def threeSum(self, nums):
+    def threeSum(self, nums:List[int]) -> List[int]:
         """
-        Easiest solution and most ineficient is a triple nested loop O(nˆ3).
+        Easiest solution and most inefficient is a triple nested loop O(nˆ3).
         Time complexity: O(nˆ2)
         Space complexity: O(1)
         """
@@ -332,8 +331,8 @@ class Solution:
                     l += 1
                 else:
                     res.append([a, nums[l], nums[r]])
-                    l += 1  # It is necessary to update the left point here so the loop in line 324 continues
-                    # This is necessary for the same reason as in line 320. To avoid repeated solutions
+                    l += 1  # It is necessary to update the left point here so the loop in line 326 continues
+                    # This is necessary for the same reason as in line 319. To avoid repeated solutions
                     while nums[l] == nums[l - 1] and l < r:
                         l += 1
             return res
@@ -365,7 +364,7 @@ class Solution:
         for c in s:
             if c not in mymap:
                 stack.append(c)
-            if not stack and stack[-1] != mymap[c]:
+            if not stack or stack[-1] != mymap[c]:
                 return False
             stack.pop()
         return not stack
@@ -373,16 +372,16 @@ class Solution:
     class MinStack:
         def __init__(self):
             self.stack = []
-            self.minStack = []
+            self.min_stack = []
 
         def push(self, val: int) -> None:
             self.stack.append(val)
-            val = min(val, self.minStack[-1] if self.minStack else val)
-            self.minStack.append(val)
+            val = min(val, self.min_stack[-1] if self.min_stack else val)
+            self.min_stack.append(val)
 
         def pop(self) -> None:
             self.stack.pop()
-            self.minStack.pop()
+            self.min_stack.pop()
 
         def top(self) -> int:
             return self.stack[-1]
@@ -507,4 +506,4 @@ class Solution:
 
 if __name__ == "__main__":
     s = Solution()
-    print(s.dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73]))
+    print(s.productExceptSelf([1, 2, 3, 4]))
