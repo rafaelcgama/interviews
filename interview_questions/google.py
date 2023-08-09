@@ -48,7 +48,7 @@ class TestSmallestLetter(unittest.TestCase):
         result = ['ab', 'c', 'd']
         self.assertEqual(max_len_combination(sentence, list_words), sorted(result))
 
-    def test_4(self): # Problem
+    def test_4(self):  # Problem
         sentence = 'sixixi'
         list_words = ['s', 'si', 'sixi', 'ix', 'xi']
         result = ['si', 'xi', 'xi']

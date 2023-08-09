@@ -1,6 +1,8 @@
 '''
 1. Design a stack that supports push, pop, top, and retrieving the minimum element in constant time. (Try not to use built in functions)
 '''
+
+
 class Stack:
     def __init__(self):
         self.stack = []
@@ -47,5 +49,3 @@ def numSubarrayProductLessThanK(nums, k):
             left += 1
         ans += right - left + 1
     return ans
-
-

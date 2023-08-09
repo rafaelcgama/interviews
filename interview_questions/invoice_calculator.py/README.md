@@ -2,28 +2,36 @@
 
 ### Background
 
-In the past, we provided some raw billing data in JSON format to the finance team, which they used to manually generate monthly invoices for our customers. Recently, they’ve asked us to create some automation to make this process less error-prone.
+In the past, we provided some raw billing data in JSON format to the finance team, which they used to manually generate
+monthly invoices for our customers. Recently, they’ve asked us to create some automation to make this process less
+error-prone.
 
 ### Instructions
 
 Your goal is to implement the bill_for function to calculate the total monthly bill for a customer.
 
-Customers are billed based on their subscription tier for the month. We charge them a prorated amount for each user who was active during that month.
+Customers are billed based on their subscription tier for the month. We charge them a prorated amount for each user who
+was active during that month.
 
-The most-senior engineer on your team suggested you should also spend some time designing your algorithm before jumping into the problem, since some ways of handling this might end up being harder to build than others.
+The most-senior engineer on your team suggested you should also spend some time designing your algorithm before jumping
+into the problem, since some ways of handling this might end up being harder to build than others.
 
 ## Parameters
+
 This billing function accepts the following parameters:
 
 **month**
 
 Always present. Has the following structure:
+
 ```
 "2019-01"   # January 2019 in YYYY-MM format
 ```
+
 **active_subscription**
 
 May be None. If present, has the following structure:'
+
 ```
 {
   'id': 1,
@@ -31,9 +39,11 @@ May be None. If present, has the following structure:'
   'monthly_price_in_dollars': 4  # price per active user per month
 }
 ```
+
 **users**
 
 May be empty, but not None. Has the following structure:
+
 ```
 [
   {
@@ -62,23 +72,30 @@ May be empty, but not None. Has the following structure:
   }
 ]
 ```
+
 **Return value**
 
 This function should return the total monthly bill for the customer, rounded to 2 decimal places.
 
-If there are no users or the subscription is not present, the function should return 0 since the customer does not owe anything for that month.
+If there are no users or the subscription is not present, the function should return 0 since the customer does not owe
+anything for that month.
 
 ## Testing
 
-The automated tests we provide only cover a few key cases, so you should plan to add some of your own tests or modify the existing ones to ensure that your solution handles any edge cases. You should be able to follow the existing patterns for naming and constructing tests to add your own.
+The automated tests we provide only cover a few key cases, so you should plan to add some of your own tests or modify
+the existing ones to ensure that your solution handles any edge cases. You should be able to follow the existing
+patterns for naming and constructing tests to add your own.
 
 ## Notes / Edge cases
 
 It’s more important for the return value to be correct than it is for the algorithm to be highly optimized.
-You can store intermediate results as any kind of decimal type (e.g. float, double). You do not need to round values until the last step.
-You should not change function names or return types of the provided functions since our test cases depend on those not changing.
+You can store intermediate results as any kind of decimal type (e.g. float, double). You do not need to round values
+until the last step.
+You should not change function names or return types of the provided functions since our test cases depend on those not
+changing.
 Time guidance
-Aim to take between 35-45 minutes for this challenge. Set a timer now for 45 minutes to gauge the time you have spent on this challenge.
+Aim to take between 35-45 minutes for this challenge. Set a timer now for 45 minutes to gauge the time you have spent on
+this challenge.
 
 If you have spent 45 or more minutes:
 

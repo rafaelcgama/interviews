@@ -30,7 +30,7 @@ Data is flattened using double underscores __ between parent and child, for ever
 }
 
 Acceptance Criteria
-Enable this functionality for both events and users - to take old vendor data and store it in our new vendor by…
+Enable this functionality for both events and users - to take old vendor data and store it in our new vendor by
 Implementing the following helper method
 """
 
@@ -38,18 +38,18 @@ Implementing the following helper method
 def unflatten(obj):
     res = {}
 
-    for k1, v1 in obj.items():
-        if isinstance(v1, dict):
-            res[k1] = {}
-            for k2, v2 in v1.items():
-                parent, child = k2.split("__")
-                if parent in res[k1]:
-                    res[k1][parent].update({child: v2})
+    for key, value in obj.items():
+        if isinstance(value, dict):
+            res[key] = {}
+            for flat_key, flat_value in value.items():
+                parent, child = flat_key.split("__")
+                if parent in res[key]:
+                    res[key][parent].update({child: flat_value})
                 else:
-                    res[k1][parent] = {child: v2}
+                    res[key][parent] = {child: flat_value}
 
-        if isinstance(v1, str):
-            res[k1] = v1
+        if isinstance(value, str):
+            res[key] = value
 
     return res
 

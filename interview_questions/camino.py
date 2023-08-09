@@ -1,4 +1,5 @@
 import unittest
+
 # func (+ integer)
 
 # odd: multiply 3 + 1
@@ -7,6 +8,7 @@ import unittest
 
 input = 3
 output = [3, 10, 5, 16, 8, 4, 2, 1]
+
 
 def reduce_to_one(num):
     assert num > 0, "input not valid"

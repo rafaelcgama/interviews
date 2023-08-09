@@ -28,6 +28,7 @@ def is_accepted(client, server):
 
     return accepted_langs
 
+
 if __name__ == '__main__':
     client = "fr-FR, fr"
     server = ["en-US", "fr-FR", "fr-CA"]

@@ -305,9 +305,9 @@ class Solution:
                 return [l + 1, r + 1]
 
     # 15. 3Sum (https://leetcode.com/problems/3sum/)
-    def threeSum(self, nums:List[int]) -> List[int]:
+    def threeSum(self, nums: List[int]) -> List[int]:
         """
-        Easiest solution and most inefficient is a triple nested loop O(nˆ3).
+        The easiest solution and most inefficient is a triple nested loop O(nˆ3).
         Time complexity: O(nˆ2)
         Space complexity: O(1)
         """

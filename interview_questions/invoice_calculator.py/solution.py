@@ -75,4 +75,3 @@ def next_day(date):
     Output type: datetime.date
     """
     return date + datetime.timedelta(days=1)
-

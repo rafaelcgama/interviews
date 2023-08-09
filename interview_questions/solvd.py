@@ -8,15 +8,17 @@ For example, given the list ["listen", "silent", "google", "ooggle", "hell", "he
 the function should return [["listen", "silent"], ["google", "ooggle"]].
 
 
-Test case:  ["listen", "silent", "google", "ooggle", "hell", "hello", "enlist"]
+Test case: ["listen", "silent", "google", "ooggle", "hell", "hello", "enlist"]
 Expected output: [["listen", "silent", “enlist”], ["google", "ooggle"]]
 
-Test case:  ["listen", "ooggle", "hell", "hello" ]
+Test case: ["listen", "ooggle", "hell", "hello" ]
 Expected output: []
 """
 
 from collections import defaultdict
 from typing import List
+import unittest
+from datetime import timedelta
 
 
 def group_anagrams(mylist: List[str]) -> List[List[str]]:
@@ -40,9 +42,6 @@ def group_anagrams(mylist: List[str]) -> List[List[str]]:
         res[tuple(count)].append(s)
 
     return [v for v in res.values() if len(v) > 1]
-
-
-import unittest
 
 
 class MyTests(unittest.TestCase):
@@ -134,12 +133,9 @@ def is_duo_digit(number):
         myset.add(number % 10)
         number //= 10
 
-    return "y" if myset <= 2 else "n"
+    return "y" if len(myset) <= 2 else "n"
 
 
-# write the body of the next_week(d) func that return  date 7 days after the date given output
-from datetime import timedelta
-
-
+# write the body of the next_week(d) func that return date 7 days after the date given output
 def next_week(d):
     return d + timedelta(days=7)

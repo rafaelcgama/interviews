@@ -17,6 +17,7 @@ import math
 from time import time
 from itertools import combinations
 
+
 # # Does not work in leetcode
 # def myproduct_with_zero(arr):
 #     result = [0] * len(arr)

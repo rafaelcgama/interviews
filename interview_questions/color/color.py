@@ -33,6 +33,7 @@ def bulbs2(arr):
 
     return total
 
+
 def bulbSwitch(n):
     bulbs = [0] * n
     for i in range(1, len(bulbs) + 1):
