@@ -3,15 +3,15 @@ import math
 import json
 import heapq
 import bisect
+import operator
 import collections
 from typing import *
 from copy import deepcopy
 from functools import cache
 from itertools import groupby
-# from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
 from collections import deque, Counter, defaultdict
+# from drawtree import draw_level_order  # '{2,#,3,#,4,#,5,#,6}')
 from itertools import permutations, combinations, accumulate, product
-import operator
 
 
 ### NEATCODE ROADMAP (https://neetcode.io/roadmap) ###
@@ -25,10 +25,12 @@ class Solution:
         """
         Time complexity: O(n)
         Space complexity: O(n)
-        Create a set from the list and compare the length of the two but the following way is better because
-        it doesn't have to iterate through the entire list to create the set. It increases as the list iteration
-        goes it stops if a duplicate is found earlier making it more performative.
+        Create a set from the list and compare the length of the two. However, the second version is more performative
+        because it doesn't have to iterate through the entire list to create the set. The set increases as the list
+        is iterated and all calculations stop when a duplicate is found, which can be very early in the iteration.
         """
+        # return not len(nums) == len(set(nums))
+
         myset = set()
 
         for n in nums:
@@ -43,15 +45,18 @@ class Solution:
         Time complexity: O(n)
         Space complexity: O(n)
         Count the occurrences of each letter in the string and compare them. If the count matches, it is an anagram.
+        Using the Counter function is the easiest way, but below it was done manually.
         """
+        # return Counter(s) == Counter(t)
+
         if len(s) != len(t):
             return False
 
         count_s, count_t = {}, {}
 
         for i in range(len(s)):
-            count_s[s[i]] = 1 + count_s.get(s[i], 0)
-            count_t[t[i]] = 1 + count_t.get(t[i], 0)
+            count_s[s[i]] = count_s.get(s[i], 0) + 1
+            count_t[t[i]] = count_t.get(t[i], 0) + 1
         return count_s == count_t
 
     # 1. Two Sum (https://leetcode.com/problems/two-sum/)
@@ -59,9 +64,9 @@ class Solution:
         """
         Time complexity: O(n)
         Space complexity: O(n)
-        In order to achieve a O(n) solution the difference between the target and the nth number in the list is
-        being stored in dictionary with its respective index as a value in case it hasn't been inserted yet. If it has,
-        the index can be retrieved and used to build the solution.
+        To achieve an O(n) solution, the difference between the target and the nth number in the list is
+        being stored in the dictionary with its respective index as a value. In case the difference is already in the
+        dictionary as a key, then the index can be retrieved and used to build the solution.
         """
         prev_map = {}
 
@@ -119,9 +124,9 @@ class Solution:
         Time complexity: O(m x n) 
         Space complexity: O(n)
         """
-        # First we count the elements in a dict
+        # First, we count the elements in a dict
         count = Counter(nums)
-        # This list needs to be created with + 1 in case so there is no idx problem in case there is only one number
+        # This list needs to be created with + 1, so there is no idx problem in case there is only one number
         # in nums.
         freq = [[] for _ in range(len(nums) + 1)]
 
@@ -146,13 +151,13 @@ class Solution:
         Time complexity: O(n)
         Space complexity: O(n)
         Ex. [1, 2, 3, 4]
-        In order to know the product of the array except itself, it is necessary to calculate the product of the
+        To know the product of the array except itself, it is necessary to calculate the product of the
         numbers that come before i (prefix) and of those that come after(postfix).
         So we create a list that multiplies its element in increasing order which will result in [1, 2, 6, 12] and do
         the same in inverse order resulting [24, 24, 12, 4]
         Finally, we would use the calculation in line 160 to multiply the prefix number before i and the postfix number
         after i.
-        To facilitate we can input the first and last elements of the result list beforehand as they are predictable.
+        To facilitate, we can input the first and last elements of the result list beforehand as they are predictable.
         """
         # prefix = list(accumulate(nums, func=operator.mul))
         # postfix = list(reversed(list(accumulate(reversed(nums), func=operator.mul))))
@@ -167,13 +172,14 @@ class Solution:
         """
         Time complexity: O(n)
         Space complexity: O(n) in the context of the problem
+        Ex. [1, 2, 3, 4]
         This version is slightly more performative because, as per problem's conditions, the "res" list is not 
         considered extra memory and we don't use waste runtime and extra memory calculating prefix/postfix as they 
-        are calculated in loops in O(1) time and using O(1) memory.
-        First a result array is created and having the same size as nums and populated by "1"s.
-        Then we set prefix/postfix to 1 to aid in their calculations as because nums[0] will go to result[1] and that's
-        when the accumulation starts. The same is true in descending order but since the the prefix is already in result
-        nums[-1] will multiply nums[-1] 
+        are calculated in the loops in O(1) time and using O(1) memory.
+        First a result array is created having the same size as nums and populated by "1"s.
+        Then we set prefix/postfix to 1 to aid in their calculations because nums[0] will go to result[1] and that's
+        when the accumulation starts. The same is true in descending order but since the the prefix is already in 
+        result nums[-1] will multiply nums[-1] 
         """
         res = [1] * len(nums)
 
@@ -194,8 +200,8 @@ class Solution:
         """
         Time complexity: O(nˆ2)
         Space complexity: O(n)
-        # According to the rules a number can't appear more than 1 in any row, col or quadrant.
-        Default dict of set are created to store and verify numbers
+        According to the rules, a number can't appear more than once in any row, col or quadrant.
+        Default dictionaries of set are created to store and verify numbers
         """
         rows = defaultdict(set)
         cols = defaultdict(set)
@@ -208,7 +214,7 @@ class Solution:
                 if board[r][c] == ".":
                     continue
 
-                # Check if board element is already in row, column or quadrant. If so, return False
+                # Check if a board element is already in row, column or quadrant. If so, return False
                 elif board[r][c] in rows[r] or \
                         board[r][c] in cols[c] or \
                         board[r][c] in squares[(r // 3, c // 3)]:  # r // 3 because each quadrant is made of 3x3
@@ -222,8 +228,8 @@ class Solution:
 
         return True
 
-    # 659 · Encode and Decode Strings (ttps://www.lintcode.com/problem/659/)
-    def encode(words: List[List[str]]):
+    # 659 · Encode and Decode Strings (https://www.lintcode.com/problem/659/)
+    def encode(self, words: List[str]) -> str:
         result = ''
         for word in words:
             result += (chr(len(word)) + word)
@@ -247,15 +253,38 @@ class Solution:
     # 128. Longest Consecutive Sequence (https://leetcode.com/problems/longest-consecutive-sequence/)
     def longestConsecutive(self, nums: List[int]) -> int:
         """
-        The trick here is to first convert the list into a set for 2 reasons.
-        First: it will eliminate duplicates
-        Second: checking in a set is a O(1) operation whereas in a list is O(n). Then we create variable to keep track
-        of the max_len
+        Time complexity: O(nlogn)
+        Space complexity: O(n)
+        Ex1 = [100, 4, 200, 1, 3, 2]
+        Ex2 = [0, 3, 7, 2, 5, 8, 4, 6, 0, 1]
+        The most obvious solution is to sort the list and iterate looking for the longest sequence.
         """
+        # if not len(nums):
+        #     return 0
+        #
+        # nums = sorted(set(nums))
+        # max_len, curr_len = 1, 1
+        #
+        # for i in range(len(nums) - 1):
+        #     if nums[i] + 1 == nums[i + 1]:
+        #         curr_len += 1
+        #     else:
+        #         max_len = max(max_len, curr_len)
+        #         curr_len = 1
+        #
+        # return max(max_len, curr_len)
+
+        # The trick here is to first convert the list into a set for two reasons.
+        # First: it will eliminate duplicates
+        # Second: checking in a set is a O(1) operation whereas in a list is O(n).
+        # Then we create a variable to keep track of the max_len.
+        # Although neet code says it is O(n), I think the while statement makes it O(n^2) and the runtime in leet code
+        # is much faster for the first solution
+
         nums_set, max_len = set(nums), 0
 
         for num in nums:
-            # Check if a number has a preceding number in list. If it has that means that it is not the beginning of
+            # Check if a number has a preceding number in the list. If so, that means that it is not the beginning of
             # a sequence and rather the continuation of one. So we keep iterating number we find that number and start
             # or not the counting of a sequence or not for the same reason.
             if (num - 1) not in nums_set:
@@ -283,7 +312,7 @@ class Solution:
         return True
 
     # Could write own alphanumeric function
-    def alphanum(self, c):
+    def alphanum(self, c: str) -> bool:
         return (
                 ord("A") <= ord(c) <= ord("Z")
                 or ord("a") <= ord(c) <= ord("z")
@@ -310,15 +339,17 @@ class Solution:
         The easiest solution and most inefficient is a triple nested loop O(nˆ3).
         Time complexity: O(nˆ2)
         Space complexity: O(1)
+        Input: nums = [-1, 0, 1, 2, -1, -4]
+        Output: [[-1, -1, 2],[-1, 0, 1]]
         """
         res = []
-        # We need to sort to avoid using the same numbers to achieve the same solution as you would in a triple nested
+        # We need to sort to avoid using the same numbers to achieve the same solution as you would in a triple-nested
         # loop and to make the runtime more efficient
         nums.sort()
 
         for i, a in enumerate(nums):
-            # This is done to avoid using a number that was previously used and the i > 0 is to make sure this condition
-            # only happens after the first number of the array is used
+            # This is done to avoid using a number that was previously used, and the i > 0 is to make sure this
+            # condition only happens after the first number of the array is used
             if i > 0 and a == nums[i - 1]:
                 continue
 
@@ -331,8 +362,9 @@ class Solution:
                     l += 1
                 else:
                     res.append([a, nums[l], nums[r]])
-                    l += 1  # It is necessary to update the left point here so the loop in line 326 continues
-                    # This is necessary for the same reason as in line 319. To avoid repeated solutions
+                    l += 1  # It is necessary to update the left point here so while loop continues
+                    # This is necessary for the same reason as in the first for loop.
+                    # To avoid repeating numbers and solutions
                     while nums[l] == nums[l - 1] and l < r:
                         l += 1
             return res
@@ -342,9 +374,10 @@ class Solution:
         res, l, r = 0, 0, len(height) - 1
 
         while l < r:
-            res = max(min(height[l], height[r]) * (r - l), res)
+            min_height = min(height[l], height[r])
+            res = max(min_height * (r - l), res)
 
-            if height[l] <= height[r]:
+            if height[l] < height[r]:
                 l += 1
             else:
                 r -= 1
@@ -364,11 +397,14 @@ class Solution:
         for c in s:
             if c not in mymap:
                 stack.append(c)
+
             if not stack or stack[-1] != mymap[c]:
                 return False
             stack.pop()
+
         return not stack
 
+    # 155. Min Stack (https://leetcode.com/problems/min-stack/)
     class MinStack:
         def __init__(self):
             self.stack = []
@@ -385,6 +421,10 @@ class Solution:
 
         def top(self) -> int:
             return self.stack[-1]
+
+        def getMin(self) -> int:
+            if self.stack:
+                return self.min_stack[-1]
 
     # 150. Evaluate Reverse Polish Notation (https://leetcode.com/problems/evaluate-reverse-polish-notation/)
     def evalRPN(self, tokens: List[str]) -> int:
@@ -433,7 +473,11 @@ class Solution:
 
     # 739. Daily Temperatures (https://leetcode.com/problems/daily-temperatures/)
     def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
-        # O(n)
+        """
+        Time complexity: O(n)
+        Space complexity: O(n)
+        Ex1 = [73, 74, 75, 71, 69, 72, 76, 73]
+        """
         answer = [0] * len(temperatures)
         stack = []
 
@@ -461,6 +505,27 @@ class Solution:
 
     # 704. Binary Search (https://leetcode.com/problems/binary-search/)
     def search(self, nums: List[int], target: int) -> int:
+        # # Recursive
+        # def recursive(arr, low, high, target):
+        #     if low <= high:
+        #         mid = (low + high) // 2
+        #         guess = arr[mid]
+        #
+        #         if guess == target:
+        #             return mid
+        #
+        #         elif guess > target:
+        #             return recursive(arr, low, mid - 1, target)
+        #
+        #         else:
+        #             return recursive(arr, mid + 1, high, target)
+        #
+        #     else:
+        #         return -1
+        #
+        # left, right = 0, len(nums) - 1
+        # return recursive(nums, left, right, target)
+
         l, r = 0, len(nums) - 1
         mid = (l + r) // 2
 
@@ -468,7 +533,7 @@ class Solution:
             if nums[mid] == target:
                 return mid
 
-            if nums[mid] > target:
+            elif nums[mid] > target:
                 r = mid - 1
 
             else:
@@ -503,7 +568,9 @@ class Solution:
                 return True
         return False
 
+    # 875. Koko Eating Bananas (https://leetcode.com/problems/koko-eating-bananas/)
+
 
 if __name__ == "__main__":
     s = Solution()
-    print(s.productExceptSelf([1, 2, 3, 4]))
+    print(s.generateParenthesis(3))

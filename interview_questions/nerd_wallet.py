@@ -30,7 +30,7 @@ Data is flattened using double underscores __ between parent and child, for ever
 }
 
 Acceptance Criteria
-Enable this functionality for both events and users - to take old vendor data and store it in our new vendor by
+Enable this functionality for both events and users to take old vendor data and store it in our new vendor by
 Implementing the following helper method
 """
 
@@ -62,7 +62,7 @@ def unflatten_recursive(old_obj):
                     parent, child = key.split("__")
                     if parent not in ans:
                         ans[parent] = {}
-                    recursive({child: value}, ans[parent])
+                    recursive({child: value}, [parent])
                 else:
                     ans[key] = value
 

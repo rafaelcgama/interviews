@@ -22,7 +22,7 @@ from datetime import timedelta
 
 
 def group_anagrams(mylist: List[str]) -> List[List[str]]:
-    ## Onlogn
+    ## O(logn)
     # res = defaultdict(list)
     # for s in mylist:
     #     key = "".join(sorted(s))
@@ -139,3 +139,83 @@ def is_duo_digit(number):
 # write the body of the next_week(d) func that return date 7 days after the date given output
 def next_week(d):
     return d + timedelta(days=7)
+
+# Given the following code
+class A:
+    custom_prop = []
+
+    def __init__(self, value=None):
+        if value:
+            self.custom_prop.append(value)
+
+a = A(10)
+b = A()
+print(b.custom_prop)
+
+
+class A:
+    def test(self):
+        print('A')
+
+class B(A):
+    def test(self):
+        super().test()
+        print('B')
+
+class C(A):
+    def test(self):
+        print("C")
+
+class D(B, C):
+    def test(self):
+        super().test()
+        print("D")
+
+d = D()
+print(d.test())
+
+# Write the body of the function "is_on_even_position(table, value)". The function should return True if value
+# is contained in table at an even index, False otherwise
+def is_on_even_position(table, value):
+    position = table.index(value)
+    if not position % 2:
+        return True
+    return False
+
+"""
+Implement the function "encode(plain_text) which returns an encoded message. 
+It receives a "plain_text" string parameter, for example, "aaaabcccaaa"
+You myst encode it by countng each consecutive sequence of a letter. e.g. in "aaaabcccaaa" there are:
+
+* 4 times the letter "a"
+* then 1 "b"
+* then 3 "c"
+* then 3 "a" 
+
+Therefore you must return the string 4a1b3c3a
+
+Constrains:
+* plain_text is made of lowercase letter: a-z
+* plaint_text is never None and has a maximum length of 15000 characters
+
+Example:
+PlainText      EncodedText 
+aabaa          2a1b2a
+
+PlainText      EncodedText 
+aaaabcccaaa    4a1b3c3a
+"""
+
+def encode(plain_text):
+    encoded_text = ""
+    current_char = plain_text[0]
+    count = 1
+    for i in range(1, len(plain_text)):
+        if plain_text[i] == current_char:
+            count += 1
+        else:
+            encoded_text += f"{count}{current_char}"
+            current_char = plain_text[i]
+            count = 1
+    encoded_text += f"{count}{current_char}"
+    return encoded_text
