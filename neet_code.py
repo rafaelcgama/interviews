@@ -119,7 +119,7 @@ class Solution:
         Space complexity: O(n)
         Easiest way is to count the elements, sort (most_common function) and return the k most common.
         """
-        # return Counter(nums).most_common(k).values()
+        # return [l[1] for l in Counter(nums).most_common(k)]
         """
         Time complexity: O(m x n) 
         Space complexity: O(n)

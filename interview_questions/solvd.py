@@ -140,6 +140,7 @@ def is_duo_digit(number):
 def next_week(d):
     return d + timedelta(days=7)
 
+
 # Given the following code
 class A:
     custom_prop = []
@@ -148,31 +149,37 @@ class A:
         if value:
             self.custom_prop.append(value)
 
+
 a = A(10)
 b = A()
-print(b.custom_prop)
+print(b.custom_prop)  # Tinha que advinhar esse resultado
 
 
 class A:
     def test(self):
         print('A')
 
+
 class B(A):
     def test(self):
         super().test()
         print('B')
 
+
 class C(A):
     def test(self):
         print("C")
+
 
 class D(B, C):
     def test(self):
         super().test()
         print("D")
 
+
 d = D()
-print(d.test())
+print(d.test())  # Tinha que advinhar esse resultado
+
 
 # Write the body of the function "is_on_even_position(table, value)". The function should return True if value
 # is contained in table at an even index, False otherwise
@@ -181,6 +188,7 @@ def is_on_even_position(table, value):
     if not position % 2:
         return True
     return False
+
 
 """
 Implement the function "encode(plain_text) which returns an encoded message. 
@@ -205,6 +213,7 @@ aabaa          2a1b2a
 PlainText      EncodedText 
 aaaabcccaaa    4a1b3c3a
 """
+
 
 def encode(plain_text):
     encoded_text = ""
