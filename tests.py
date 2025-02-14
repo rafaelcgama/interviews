@@ -121,9 +121,28 @@
 #
 # assert output == expected
 #
+from typing import List
 
 
-def func(b=0, c=1, d=2):
-    print(b,c, d)
+def productExceptSelf(nums: List[int]) -> List[int]:
+    n = len(nums)
+    res = [0] * n
+    pref = [0] * n
+    suff = [0] * n
 
-print()
+    pref[0] = suff[n - 1] = 1
+    for i in range(1, n):
+        pref[i] = nums[i - 1] * pref[i - 1]
+
+    for i in range(n - 2, -1, -1):
+        suff[i] = nums[i + 1] * suff[i + 1]
+
+    for i in range(n):
+        res[i] = pref[i] * suff[i]
+
+    return res
+
+
+nums = [1, 2, 3, 4]
+
+print(productExceptSelf(nums))
