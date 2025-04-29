@@ -27,7 +27,7 @@ class Solution:
         Space complexity: O(n)
         Create a set from the list and compare the length of the two. However, the second version is more performative
         because it doesn't have to iterate through the entire list to create the set. The set increases as the list
-        is iterated and all calculations stop when a duplicate is found, which can be very early in the iteration.
+        is iterated, and all calculations stop when a duplicate is found, which can be very early in the iteration.
         """
         # return not len(nums) == len(set(nums))
 
@@ -48,16 +48,16 @@ class Solution:
         Using the Counter function is the easiest way, but below it was done manually.
         """
         # return Counter(s) == Counter(t)
-
         if len(s) != len(t):
             return False
 
-        count_s, count_t = {}, {}
+        countS, countT = dict(), dict()
 
         for i in range(len(s)):
-            count_s[s[i]] = count_s.get(s[i], 0) + 1
-            count_t[t[i]] = count_t.get(t[i], 0) + 1
-        return count_s == count_t
+            countS[s[i]] = countS.get(s[i], 0) + 1
+            countT[t[i]] = countT.get(t[i], 0) + 1
+
+        return countS == countT
 
     # 1. Two Sum (https://leetcode.com/problems/two-sum/)
     def twoSum(self, nums: List[int], target: int) -> List[int]:
@@ -68,13 +68,13 @@ class Solution:
         being stored in the dictionary with its respective index as a value. In case the difference is already in the
         dictionary as a key, then the index can be retrieved and used to build the solution.
         """
-        prev_map = {}
+        res = {}
 
         for i, n in enumerate(nums):
             diff = target - n
-            if diff in prev_map:
-                return [i, prev_map[diff]]
-            prev_map[diff] = i
+            if diff in res:
+                return [res[diff], i]
+            res[n] = i
 
     # 49. Group Anagrams (https://leetcode.com/problems/group-anagrams/)
     def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
@@ -99,18 +99,6 @@ class Solution:
         list to tuple so it can be used as a key in the mapping dict and append the word being analyzed so a list of
         words can be created for each count. 
         """
-        mydict = defaultdict(list)
-
-        for s in strs:
-
-            count = [0] * 26
-
-            for c in s:
-                count[ord(c) - ord('a')] += 1
-
-            mydict[tuple(count)].append(s)
-
-        return mydict.values()
 
     # 347. Top K Frequent Elements (https://leetcode.com/problems/top-k-frequent-elements/)
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:

@@ -124,25 +124,52 @@
 from typing import List
 
 
-def productExceptSelf(nums: List[int]) -> List[int]:
-    n = len(nums)
-    res = [0] * n
-    pref = [0] * n
-    suff = [0] * n
+#
+#
+# def productExceptSelf(nums: List[int]) -> List[int]:
+#     n = len(nums)
+#     res = [0] * n
+#     pref = [0] * n
+#     suff = [0] * n
+#
+#     pref[0] = suff[n - 1] = 1
+#     for i in range(1, n):
+#         pref[i] = nums[i - 1] * pref[i - 1]
+#
+#     for i in range(n - 2, -1, -1):
+#         suff[i] = nums[i + 1] * suff[i + 1]
+#
+#     for i in range(n):
+#         res[i] = pref[i] * suff[i]
+#
+#     return res
+#
+#
+# nums = [1, 2, 3, 4]
+#
+# print(productExceptSelf(nums))
 
-    pref[0] = suff[n - 1] = 1
-    for i in range(1, n):
-        pref[i] = nums[i - 1] * pref[i - 1]
+def min_stack(s):
+    class MinStack:
+        def __init__(self):
+            self.stack = []
+            self.min = []
 
-    for i in range(n - 2, -1, -1):
-        suff[i] = nums[i + 1] * suff[i + 1]
+        def push(self, value):
+            self.stack.append(value)
+            if not self.min:
+                self.min.append(value)
+            else:
+                self.min.append(min(self.min[-1], value))
 
-    for i in range(n):
-        res[i] = pref[i] * suff[i]
+        def pop(self):
+            self.stack.pop()
+            self.min.pop()
 
-    return res
+        def top(self):
+            return self.stack[-1]
+
+        def get_min(self):
+            return self.min[-1]
 
 
-nums = [1, 2, 3, 4]
-
-print(productExceptSelf(nums))
