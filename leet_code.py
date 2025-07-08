@@ -51,7 +51,7 @@ class Trie:
 
         return cur.is_word
 
-    def startsWith(self, prefix):
+    def starts_with(self, prefix):
         cur = self.root
 
         for c in prefix:
@@ -76,6 +76,7 @@ class ListNode:
 
         return head.next
 
+    @staticmethod
     def print_linked_list(self, head):
         tail = head
         while tail:
@@ -755,7 +756,7 @@ class Solution:
             if current == 0:
                 count -= 1  # decrement our count if our current element is 0
             else:
-                # increment our count if current element is 1
+                # increment our count if the current element is 1
                 count += 1
 
             if count == 0:
@@ -798,7 +799,7 @@ class Solution:
             subset.append(nums[i])
             dfs(i + 1, subset)
 
-            # decision NOT to include nums[i]
+            # decision DOES NOT include nums[i]
             subset.pop()
             dfs(i + 1, subset)
 

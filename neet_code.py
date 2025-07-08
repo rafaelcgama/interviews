@@ -107,7 +107,7 @@ class Solution:
         Space complexity: O(n)
         Easiest way is to count the elements, sort (most_common function) and return the k most common.
         """
-        # return [l[1] for l in Counter(nums).most_common(k)]
+        # return [l[0] for l in Counter(nums).most_common(k)]
         """
         Time complexity: O(m x n) 
         Space complexity: O(n)
@@ -132,6 +132,8 @@ class Solution:
                 res.append(n)
                 if len(res) == k:
                     return res
+
+
 
     # 238. Product of Array Except Self (https://leetcode.com/problems/product-of-array-except-self/)
     def productExceptSelf(self, nums: List[int]) -> List[int]:

@@ -123,7 +123,6 @@
 #
 from typing import List
 
-
 #
 #
 # def productExceptSelf(nums: List[int]) -> List[int]:
@@ -149,27 +148,26 @@ from typing import List
 #
 # print(productExceptSelf(nums))
 
-def min_stack(s):
-    class MinStack:
-        def __init__(self):
-            self.stack = []
-            self.min = []
-
-        def push(self, value):
-            self.stack.append(value)
-            if not self.min:
-                self.min.append(value)
-            else:
-                self.min.append(min(self.min[-1], value))
-
-        def pop(self):
-            self.stack.pop()
-            self.min.pop()
-
-        def top(self):
-            return self.stack[-1]
-
-        def get_min(self):
-            return self.min[-1]
-
+# def min_stack(s):
+#     class MinStack:
+#         def __init__(self):
+#             self.stack = []
+#             self.min = []
+#
+#         def push(self, value):
+#             self.stack.append(value)
+#             if not self.min:
+#                 self.min.append(value)
+#             else:
+#                 self.min.append(min(self.min[-1], value))
+#
+#         def pop(self):
+#             self.stack.pop()
+#             self.min.pop()
+#
+#         def top(self):
+#             return self.stack[-1]
+#
+#         def get_min(self):
+#             return self.min[-1]
 
