@@ -102,19 +102,19 @@ def search_for_hash(start_dir: str, hash_value: str) -> Optional[dict]:
                     "hash": hash_value
                 }
 
-def walk_through_folder(start_dir):
-    for root, dirs, files in os.walk(start_dir):
-        print(root)
-        for f in files:
-            print(f"{os.path.join(root, f)}")
+# def walk_through_folder(start_dir):
+#     for root, dirs, files in os.walk(start_dir):
+#         print(root)
+#         for f in files:
+#             print(f"{os.path.join(root, f)}")
 
 
 #TODO:
 # Add cache to improve
 # Add try/except arguments
 if __name__ == "__main__":
-# result = search_for_hash('start', 'a0b8c2cdf1b52e7d65f23e5387dcd35327a97445')
-# print("RESULT\n==================================")
-# print(result)
-#     print(search_for_hash('start', 'da39a3ee5e6b4b0d3255bfef95601890afd80709'))
-    walk_through_folder("start")
+    result = search_for_hash('start', 'a0b8c2cdf1b52e7d65f23e5387dcd35327a97445')
+    print("RESULT\n==================================")
+    print(result)
+    print(search_for_hash('start', 'da39a3ee5e6b4b0d3255bfef95601890afd80709'))
+    # walk_through_folder("start")

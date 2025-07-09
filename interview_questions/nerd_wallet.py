@@ -75,6 +75,24 @@ def unflatten_recursive(old_obj):
     return recursive(old_obj, {})
 
 
+def unflatten_recursive2(flat_dict):
+    def insert_path(d, key, value):
+        parts = key.split("__")
+        for part in parts[:-1]:
+            d = d.setdefault(part, {})
+        d[parts[-1]] = value
+
+    result = {}
+    for key, value in flat_dict.items():
+        if isinstance(value, dict):
+            # Recursively unflatten any nested dictionaries
+            result[key] = unflatten_recursive(value)
+        else:
+            insert_path(result, key, value)
+
+    return result
+
+
 input1 = {
     "top_level_attribute": {
         "parent_attribute__child_A": "value_A",
