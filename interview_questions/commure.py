@@ -1,14 +1,32 @@
 import csv
 import requests
+from typing import Any
 from datetime import date, timedelta
 
 API_BASE = "https://lichess.org/api"
+
+
+def format_date_human(d: date) -> str:
+    """
+    Format `date(YYYY, M, D)` → "Month D" without leading zero.
+    """
+    return d.strftime("%B %d").lstrip("0")
 
 
 def get_top_classical_users(count: int, variant: str) -> list[str]:
     resp = requests.get(f"{API_BASE}/player/top/{count}/{variant}")
     resp.raise_for_status()
     return [player["username"] for player in resp.json()['users']]
+
+
+def get_player_rating_history(user: str) -> Any | None:
+    resp = requests.get(url=f"{API_BASE}/user/{user}/rating-history")
+    resp.raise_for_status()
+
+    for variant in resp.json():
+        if variant['name'].lower() == 'classical':
+            return variant['points']
+    return None
 
 
 def find_starting_rating(normalized_records: dict[date, int], start_date: date) -> int:
@@ -24,22 +42,6 @@ def find_starting_rating(normalized_records: dict[date, int], start_date: date) 
     return normalized_records[min(normalized_records.keys())]
 
 
-def get_player_rating_history(user: str) -> list[list[int]]:
-    resp = requests.get(url=f"{API_BASE}/user/{user}/rating-history")
-    resp.raise_for_status()
-
-    for variant in resp.json():
-        if variant['name'].lower() == 'classical':
-            return variant['points']
-
-
-def format_date_human(d: date) -> str:
-    """
-    Format `date(YYYY, M, D)` → "Month D" without leading zero.
-    """
-    return d.strftime("%B %d").lstrip("0")
-
-
 def generate_daily_ratings(records: list[list[int]], period_days: int = 30, end_date: date | None = None) -> dict[
     date, int]:
     """
@@ -49,7 +51,7 @@ def generate_daily_ratings(records: list[list[int]], period_days: int = 30, end_
 
     records: List of [year, month, day, rating]
     period_days: Number of days to go back from `end`
-    end_date: A datetime.date; defaults to today if None
+    end_date: A datetime.date; defaults to None
     """
     # 1. Normalize records into a dict: date -> rating
     normalized_records = {
@@ -98,9 +100,9 @@ def generate_rating_csv_for_top_50_classical_players(end_date: date, period_days
 
     # Header: username + formatted dates in ascending order
     date_list = [start_date + timedelta(days=i) for i in range(period_days)]
-    header = ["username"] + [d.strftime("%Y-%m-%d") for d in date_list]  # Customized date format for header
+    header = ["username"] + [d.strftime("%Y-%m-%d") for d in date_list]  # Customized date format for the header
 
-    filename = 'ratings.csv'
+    filename = 'top_50_classical_players_ratings.csv'
     with open(filename, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(header)
