@@ -26,7 +26,7 @@ def get_player_rating_history(user: str) -> Any | None:
     for variant in resp.json():
         if variant['name'].lower() == 'classical':
             return variant['points']
-    return None
+    return 0
 
 
 def find_starting_rating(normalized_records: dict[date, int], start_date: date) -> int:
@@ -60,7 +60,7 @@ def generate_daily_ratings(records: list[list[int]], period_days: int = 30, end_
     }
 
     # 2. Define range
-    if end_date is None:
+    if not end_date:
         end_date = date.today()
     start_date = end_date - timedelta(days=period_days - 1)
 
@@ -84,8 +84,8 @@ def print_top_50_classical_players() -> None:
         print(user)
 
 
-def print_last_30_day_rating_for_top_player(end_date: date) -> None:
-    top_player = get_top_classical_users(1, 'classical')[0]
+def print_last_30_day_rating_for_top_player(end_date: date, variant: str = 'classical') -> None:
+    top_player = get_top_classical_users(1, variant)[0]
     top_player_rating_history = get_player_rating_history(top_player)
     last_30 = generate_daily_ratings(top_player_rating_history, 30, end_date)
 
@@ -94,8 +94,9 @@ def print_last_30_day_rating_for_top_player(end_date: date) -> None:
     print((top_player, reversed_formatted))
 
 
-def generate_rating_csv_for_top_50_classical_players(end_date: date, period_days: int = 30) -> None:
-    users = get_top_classical_users(50, 'classical')
+def generate_rating_csv_for_top_50_classical_players(end_date: date, variant: str = 'classical',
+                                                     period_days: int = 30) -> None:
+    users = get_top_classical_users(50, variant)
     start_date = end_date - timedelta(days=period_days - 1)
 
     # Header: username + formatted dates in ascending order
@@ -119,12 +120,13 @@ def generate_rating_csv_for_top_50_classical_players(end_date: date, period_days
 
 if __name__ == "__main__":
     END_DATE = date.today()
+    VARIANT = 'classical'
 
     # Task 1
     print_top_50_classical_players()
 
     # Task 2
-    print_last_30_day_rating_for_top_player(END_DATE)
+    print_last_30_day_rating_for_top_player(END_DATE, VARIANT)
 
     # Task 3
-    generate_rating_csv_for_top_50_classical_players(END_DATE)
+    generate_rating_csv_for_top_50_classical_players(END_DATE, VARIANT)
