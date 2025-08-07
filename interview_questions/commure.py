@@ -14,19 +14,28 @@ def format_date_human(d: date) -> str:
 
 
 def get_top_classical_users(count: int, variant: str) -> list[str]:
-    resp = requests.get(f"{API_BASE}/player/top/{count}/{variant}")
-    resp.raise_for_status()
-    return [player["username"] for player in resp.json()['users']]
+    try:
+        resp = requests.get(url=f"{API_BASE}/player/top/{count}/{variant}")
+        resp.raise_for_status()
+        return [player["username"] for player in resp.json()['users']]
+
+    except requests.RequestException as e:
+        print(f"[ERROR] Failed to fetch top {count} {variant} users: {e}")
+        return []
 
 
 def get_player_rating_history(user: str) -> Any | None:
-    resp = requests.get(url=f"{API_BASE}/user/{user}/rating-history")
-    resp.raise_for_status()
+    try:
+        resp = requests.get(url=f"{API_BASE}/user/{user}/rating-history")
+        resp.raise_for_status()
+        for variant in resp.json():
+            if variant['name'].lower() == 'classical':
+                return variant['points']
+        return 0
 
-    for variant in resp.json():
-        if variant['name'].lower() == 'classical':
-            return variant['points']
-    return 0
+    except requests.RequestException as e:
+        print(f"[ERROR] Failed to fetch rating history for {user}: {e}")
+        return []
 
 
 def find_starting_rating(normalized_records: dict[date, int], start_date: date) -> int:
@@ -42,8 +51,10 @@ def find_starting_rating(normalized_records: dict[date, int], start_date: date) 
     return normalized_records[min(normalized_records.keys())]
 
 
-def generate_daily_ratings(records: list[list[int]], period_days: int = 30, end_date: date | None = None) -> dict[
-    date, int]:
+def generate_daily_ratings(records: list[list[int]],
+                           period_days: int = 30,
+                           end_date: date | None = None
+                           ) -> dict[date, int]:
     """
     Given a list of records [year, month, day, rating], returns a dict
     mapping each date in the last `period_days` ending at `end` (inclusive)
@@ -94,7 +105,8 @@ def print_last_30_day_rating_for_top_player(end_date: date, variant: str = 'clas
     print((top_player, reversed_formatted))
 
 
-def generate_rating_csv_for_top_50_classical_players(end_date: date, variant: str = 'classical',
+def generate_rating_csv_for_top_50_classical_players(end_date: date,
+                                                     variant: str = 'classical',
                                                      period_days: int = 30) -> None:
     users = get_top_classical_users(50, variant)
     start_date = end_date - timedelta(days=period_days - 1)
@@ -110,10 +122,14 @@ def generate_rating_csv_for_top_50_classical_players(end_date: date, variant: st
 
         for user in users:
             print(f"Generating ratings for {user}...")
-            history = get_player_rating_history(user)
-            daily = generate_daily_ratings(history, period_days)
-            row = [user] + [daily[d] for d in date_list]
-            writer.writerow(row)
+            try:
+                history = get_player_rating_history(user)
+                daily = generate_daily_ratings(history, period_days, end_date)
+                row = [user] + [daily[d] for d in date_list]
+                writer.writerow(row)
+
+            except Exception as e:
+                print(f"[ERROR] Skipping {user} due to error: {e}")
 
     print(f"{filename} created.")
 
@@ -130,3 +146,19 @@ if __name__ == "__main__":
 
     # Task 3
     generate_rating_csv_for_top_50_classical_players(END_DATE, VARIANT)
+
+    try:
+        END_DATE = date.today()
+        VARIANT = 'classical'
+
+        # Task 1
+        print_top_50_classical_players()
+
+        # Task 2
+        print_last_30_day_rating_for_top_player(END_DATE, VARIANT)
+
+        # Task 3
+        generate_rating_csv_for_top_50_classical_players(END_DATE, VARIANT)
+
+    except Exception as e:
+        print(f"[FATAL ERROR] Unexpected crash: {e}")
