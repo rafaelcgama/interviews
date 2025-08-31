@@ -3,3 +3,6 @@ binarytree
 jupyter
 drawtree
 requests
+sqlalchemy
+pybase62
+flask
