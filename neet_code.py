@@ -133,8 +133,6 @@ class Solution:
                 if len(res) == k:
                     return res
 
-
-
     # 238. Product of Array Except Self (https://leetcode.com/problems/product-of-array-except-self/)
     def productExceptSelf(self, nums: List[int]) -> List[int]:
         """

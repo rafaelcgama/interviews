@@ -67,7 +67,7 @@ def new_link():
 
 
 # ---- Redirect: use short link ----
-@app.get("api/<code>")  # not use /api so it looks like a bitly
+@app.get("/api/<code>")  # not use /api so it looks like a bitly
 def get_code(code):
     url_id = base62.decode(code)
 

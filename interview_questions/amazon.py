@@ -14,6 +14,9 @@ except for in [i].
 # in = [1, 2, 0, 4]
 
 import math
+from typing import List
+from itertools import accumulate
+import operator
 
 
 # from time import time
@@ -69,6 +72,7 @@ def product_with_zero_2(nums):
             prod *= num
         else:
             zero_cnt += 1
+
     if zero_cnt > 1:
         return [0] * len(nums)
 
@@ -116,12 +120,40 @@ def product_On(arr):
     return result
 
 
+def productExceptSelfv1(nums: List[int]) -> List[int]:
+    prefix = list(accumulate(nums, func=operator.mul))
+
+    postfix = list(accumulate(reversed(nums), func=operator.mul))[::-1]
+
+    res = [postfix[1]] + ([0] * (len(nums) - 2)) + [prefix[-2]]
+
+    for i in range(1, len(nums) - 1):
+        res[i] = prefix[i - 1] * postfix[i + 1]
+
+    return res
+
+
+def productExceptSelfOptimal(nums: List[int]) -> List[int]:
+    res = [1] * (len(nums))
+
+    prefix = 1
+    for i in range(len(nums)):
+        res[i] = prefix
+        prefix *= nums[i]
+
+    postfix = 1
+    for i in range(len(nums) - 1, -1, -1):
+        res[i] *= postfix
+        postfix *= nums[i]
+    return res
+
+
 # seqs = [[1, 2, 3, 4], [-1, 1, 0, -3, 3], [0, 0, 2, 4, 5]]
 # for s in seqs:
 # s = [1, 2, 0, 6]
 # print(product_with_zero_2(s))
 
-print(product_Onˆ2_v1([1, 2, 3, 4]))
+print(productExceptSelfOptimal([2, 3, 4, 5]))
 
 # mylist = list(range(1, 21))
 #
