@@ -1,0 +1,126 @@
+Phoenix: Technical Design Document
+
+Context
+
+The objective of this document is to propose a technical solution to improve the speed of displaying images in our online product catalog. The solution aims to enhance the delivery of images and optimize the updating process of the catalog. The system will ensure that users can easily access high-quality images with faster load times, improving their overall shopping experience.
+
+System Architecture
+
+The solution comprises two primary components: a content delivery network (CDN) and an image processing service. The system's architecture is as follows:
+
+Content Delivery Network (CDN): The CDN is a globally distributed network of servers that stores and delivers the content to users based on their geographic location. The CDN caches the images and other static content on servers closer to the users' location, reducing the distance and latency between the user and the content. This results in faster load times, improved availability, and reduced bandwidth costs.
+
+Image Processing Service: The image processing service is responsible for optimizing the images for the web and delivering them to the CDN. The service will perform the following tasks:
+
+Resizing the images to the appropriate dimensions for the device and browser.
+
+Compressing the images to reduce their file size without compromising the quality.
+
+Converting the images to the appropriate format (e.g., JPEG, PNG) for the user's device and browser.
+
+Caching the processed images in the CDN for faster delivery.
+
+
+
+                                                ┌──────────────┐
+
+                                                │    User's    │
+
+                                                │   Browser    │
+
+                                                └──────┬───────┘
+
+                                                       │
+
+                                                       │ HTTP/S
+
+                                                ┌──────▼───────┐
+
+                                   ┌────────────┤   Content    │
+
+                       HTTP/S      │ CDN Server ├──────────────►
+
+                       requests    └──────┬─────┘  (Cached)  
+
+                                          │                    
+
+                                          │                    
+
+                                          │ HTTP/S              
+
+                                ┌─────────▼─────────┐          
+
+                                │  Image Processing │          
+
+                                │      Service      │          
+
+                                └─────────┬─────────┘          
+
+                                          │ HTTP/S              
+
+                                          │                    
+
+                                          │                    
+
+                           ┌──────────────▼───────────────┐      
+
+                           │   Original Image Repository  │      
+
+                           └──────────────────────────────┘  
+
+
+
+Here's a breakdown of how the image processing service works:
+
+User's Browser: The user's browser makes an HTTP/S request for an image from the product catalog.
+
+CDN Server: The CDN server receives the request and checks its cache to see if it has a cached copy of the requested image.
+
+Content (Cached): If the CDN server has a cached copy of the image, it returns the cached copy to the user's browser, and the request is complete.
+
+Image Processing Service: If the CDN server does not have a cached copy of the image, it makes an HTTP/S request to the image processing service, passing along the requested image's URL.
+
+Original Image Repository: The image processing service retrieves the original image from the original image repository and applies various optimizations, such as resizing, compressing, and converting the image to the appropriate format.
+
+Content: The image processing service returns the optimized image to the CDN server, which caches the image for future requests.
+
+CDN Server: The CDN server returns the optimized image to the user's browser.
+
+User's Browser: The user's browser caches the optimized image for future use.
+
+
+
+The image processing service optimizes images on the fly as they are requested from the product catalog, ensuring that users receive optimized images quickly and efficiently. The optimizations performed by the image processing service include resizing, compressing, and converting the images to the appropriate format for the user's device and browser.
+
+
+
+Updating the Catalog
+
+When an image in the catalog is updated, the following steps will take place:
+
+The updated image will be uploaded to the image processing service.
+
+The service will process the image and cache it in the CDN.
+
+The CDN will invalidate the cache for the old image and serve the updated image to the users.
+
+The users' browsers will receive the updated image and cache it for future use.
+
+
+
+Security
+
+To ensure the security of the system, the following measures will be implemented:
+
+The CDN will use HTTPS to encrypt the communication between the user's browser and the CDN servers.
+
+The image processing service will use secure protocols (e.g., HTTPS, SSH) for uploading and downloading images.
+
+The CDN will use access control lists (ACLs) to restrict access to the cached content.
+
+The image processing service will be hosted in a secure environment with limited access.
+
+
+**ANSWERS**
+
+- falar sobre coisas quantitativas (QPS, MBS de cada imagens
