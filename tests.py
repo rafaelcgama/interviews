@@ -168,6 +168,26 @@ from typing import List
 #         def top(self):
 #             return self.stack[-1]
 #
-#         def get_min(self):
+#         def get_min(self):*
 #             return self.min[-1]
+
+def find_duplicate_house(T):
+    slow = T[0]
+    fast = T[T[0]]
+
+    while slow != fast:
+        slow = T[slow]
+        fast = T[T[fast]]
+
+    slow = 0
+    while slow != fast:
+        slow = T[slow]
+        fast = T[fast]
+
+    return slow
+
+
+T = [4, 2, 7, 1, 6, 5, 3, 8, 7]
+print(find_duplicate_house(T))
+
 

@@ -17,25 +17,28 @@ axios.get(ITEMS_API_URL, { params: { q: value } })
 
 Component name: Autocomplete
 Props:
--	onSelectItem(item: string)
+
+- onSelectItem(item: string)
 
 State you must handle:
--	query/text (the input value)
--	items (list returned from the server)
--	loading (controls spinner)
+
+- query/text (the input value)
+- items (list returned from the server)
+- loading (controls spinner)
 
 Behavior:
-1.	Every time the user types, update the query state.
-2.	Wait 500ms debounce before sending the request.
-3.	Cancel previous calls implicitly through debounce (not manually).
-4.	Do NOT send requests on every keypress — debounce is mandatory.
+
+1. Every time the user types, update the query state.
+2. Wait 500ms debounce before sending the request.
+3. Cancel previous calls implicitly through debounce (not manually).
+4. Do NOT send requests on every keypress — debounce is mandatory.
 5. If the input is empty:
     - Do not fetch
     - Clear items
     - loading = false
-6.	When clicking a list item, call onSelectItem(item).
-7.	Do not render the list when loading.
-8.	Do not render the list when items array is empty.
+6. When clicking a list item, call onSelectItem(item).
+7. Do not render the list when loading.
+8. Do not render the list when items array is empty.
 
 ---
 
@@ -44,7 +47,6 @@ Behavior:
 - React
 - axios
 - lodash
-
 
 ---
 
@@ -91,13 +93,13 @@ Codility tests strictly check these class names.
 
 • Show the spinner (is-loading) only while waiting for the API.
 • Hide the list when:
-•	loading
-•	query empty
-•	items empty
+• loading
+• query empty
+• items empty
 
 • Show list only when:
-•	not loading
-•	items length > 0
+• not loading
+• items length > 0
 
 ⸻
 
